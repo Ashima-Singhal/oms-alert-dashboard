@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<server description="new server">
+
+    <featureManager>
+        <feature>servlet-4.0</feature>
+        <feature>springBoot-2.0</feature>
+    </featureManager>
+
+    <httpEndpoint id="defaultHttpEndpoint"
+                  httpPort="8080"
+                  httpsPort="9443" />
+
+    <springBootApplication id="oms-alert-dashboard-SNAPSHOT"
+                           location="oms-alert-dashboard-0.1.0-SNAPSHOT.jar"
+                           name="oms-alert-dashboard-SNAPSHOT" />
+
+</server>
