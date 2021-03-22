@@ -30,22 +30,23 @@ public class OmsService {
 	}
 
 
-	public Master getLatestRecordMaster(){
+	public List<Master> getLatestRecordMaster(){
 		List<Master> list = masterRepository.findAll();
 		//System.out.println("output-"+list.get(list.size()-1));  
-		return list.get(list.size() - 1);
+		return list;
 		//System.out.println("events list$$$$"+queryService.getEvents(latestRecord.toString())); 
 		//return null;
 		//System.out.println("fetched value from db$$$" + String.valueOf(latestRecord));  
 	}
 	
-	public CoC_Prod getLatestRecordProd() {
+	public List<CoC_Prod> getLatestRecordProd() {
 		List<CoC_Prod> list = prodRepository.findAll();
-		return list.get(list.size() - 1); 
+		return list;
 	}
 	
-	public CoC_IKS getLatestRecordIks() {
+	public List<CoC_IKS> getLatestRecordIks() {
 		List<CoC_IKS> list = iksRepository.findAll();
-		return list.get(list.size() - 1);
+		return list;
 	}
+	
 }
