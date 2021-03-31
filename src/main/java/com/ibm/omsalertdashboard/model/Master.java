@@ -13,7 +13,7 @@ public class Master {
 
 	@Id
 	private String id;
-	//@JsonProperty("results")
+	@JsonProperty("results")
 	private List<Map<String, List<MasterEvents>>> results;
 	private Map<String, Integer> performanceStats;
 	private Map<String, Object> metadata;
