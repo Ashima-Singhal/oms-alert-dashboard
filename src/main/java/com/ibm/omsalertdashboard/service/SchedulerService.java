@@ -20,14 +20,15 @@ import com.ibm.omsalertdashboard.util.TimerUtil;
 @Service
 public class SchedulerService {
 
-	private final Scheduler scheduler;
+	@Autowired
+	private Scheduler scheduler;
 	private static final Logger LOG = LoggerFactory.getLogger(SchedulerService.class);
 	
-	@Autowired
-	public SchedulerService(Scheduler scheduler) {
-		super();
-		this.scheduler = scheduler;
-	}
+//	@Autowired
+//	public SchedulerService(Scheduler scheduler) {
+//		super();
+//		this.scheduler = scheduler;
+//	}
 	
 	//method to schedule job
 	public void schedule(final Class jobClass, final TimerInfo info) {

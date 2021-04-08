@@ -12,11 +12,13 @@ import org.springframework.stereotype.Component;
 
 import com.ibm.omsalertdashboard.model.CoC_IKS;
 import com.ibm.omsalertdashboard.model.CoC_Prod;
+import com.ibm.omsalertdashboard.model.Incidents;
 import com.ibm.omsalertdashboard.model.Key;
 import com.ibm.omsalertdashboard.model.Master;
 import com.ibm.omsalertdashboard.model.TimestampUtil;
 import com.ibm.omsalertdashboard.repository.Coc_IKSRepository;
 import com.ibm.omsalertdashboard.repository.Coc_ProdRepository;
+import com.ibm.omsalertdashboard.repository.IncidentsRepository;
 import com.ibm.omsalertdashboard.repository.KeyRepository;
 import com.ibm.omsalertdashboard.repository.MasterRepository;
 import com.ibm.omsalertdashboard.repository.TimestampRepository;
@@ -25,30 +27,14 @@ import com.ibm.omsalertdashboard.service.QueryService;
 @Component
 public class OmsJob implements Job{
 
-	private final QueryService queryService;
-	private final KeyRepository keyRepository;
-	private final TimestampRepository timestampRepository;
-	private final MasterRepository masterRepository;
-	private final Coc_IKSRepository cocIksRepository;
-	private final Coc_ProdRepository cocProdRepository;
-	
 	@Autowired
-	public OmsJob(final QueryService queryService,final KeyRepository keyRepository,final TimestampRepository timestampRepository,final MasterRepository masterRepository,
-				final Coc_IKSRepository cocIksRepository,final Coc_ProdRepository cocProdRepository) {
-		super();
-		this.queryService = queryService;
-		this.keyRepository = keyRepository;
-		this.timestampRepository = timestampRepository;
-		this.masterRepository = masterRepository;
-		this.cocIksRepository = cocIksRepository;
-		this.cocProdRepository = cocProdRepository;
-	}
-
-
+	private  QueryService queryService;
+	@Autowired
 	private static final Logger LOG = LoggerFactory.getLogger(OmsJob.class);
+	
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
-		// TODO Auto-generated method stub
+		
 		LOG.info("Executing Oms Job!!!"); 
 		insertMaster();
 		insertCocIks();
@@ -58,77 +44,66 @@ public class OmsJob implements Job{
 	
 	public void insertMaster() {
 		try {
-			Key key = keyRepository.findOneByName("master");
-			//System.out.println("--------"+key.getAccount_id());
-			TimestampUtil oldTimestamp = timestampRepository.findOneByName("master");
-			System.out.println("old time-"+oldTimestamp.getTimestamp()); 
+			Key key = queryService.findOneByName("master");
+			TimestampUtil oldTimestamp = queryService.findTimeByName("master"); 
 			String json = queryService.query(oldTimestamp.getTimestamp(), key.getAccount_id(), key.getQuery_key()); 
-			System.out.println("JSON response-"+ json); 
-			//System.out.println(json);
 			
-			if(queryService.getEvents(json).size() == 0) {
-				LOG.info("No new events!!!");
-				return;
-			}
+			if(!queryService.getEvents(json, "master")) return;
 			
-			Long newTimestamp = queryService.readNewTimestamp(json);
-			System.out.println("new time---"+newTimestamp);
-			timestampRepository.updateTimestamp("master", newTimestamp);
-			LOG.info("timestamp successfully updated!!!"); 
-			Master master = queryService.jsonToObjectMaster(json);
-			masterRepository.save(master);
-			LOG.info("successfully inserted in master collection!!!"); 
+			Long newTimestamp = queryService.readNewTimestamp(json,"master");
+			
+			queryService.updateTimestamp("master", newTimestamp); 
+			
+			Incidents incidents = queryService.jsonToObject(json);
+			
+			queryService.update(incidents, "master"); 
+			 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 			LOG.error(e.getMessage(), e); 
 		}
 	}
 	
 	public void insertCocIks() {
-		Key key = keyRepository.findOneByName("coc_iks");
-		TimestampUtil timestamp = timestampRepository.findOneByName("coc_iks");
-		System.out.println("Old time-"+timestamp.getTimestamp()); 
+		Key key = queryService.findOneByName("coc_iks");
+		TimestampUtil timestamp = queryService.findTimeByName("coc_iks");
 		try {
 			String json = queryService.query(timestamp.getTimestamp(), key.getAccount_id(), key.getQuery_key());
-			if(queryService.getEvents(json).size() == 0) {
-				LOG.info("No new events!!!");
-				return;
-			}
 			
-			Long newTimestamp = queryService.readNewTimestamp(json);
-			System.out.println("new time-"+newTimestamp); 
-			timestampRepository.updateTimestamp("coc_iks", newTimestamp);
-			LOG.info("Timestamp successfully updated!!!");
-			CoC_IKS coc = queryService.jsonToObjectCoc_IKS(json);
-			cocIksRepository.save(coc);
-			LOG.info("successfully inserted in coc_iks collection!!!");
+			if(!queryService.getEvents(json, "coc_iks")) return;
+			
+			Long newTimestamp = queryService.readNewTimestamp(json, "coc_iks");
+
+			queryService.updateTimestamp("coc_iks", newTimestamp); 
+			
+			Incidents incidents = queryService.jsonToObject(json);
+			
+			queryService.update(incidents, "coc_iks");  
+			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			LOG.error(e.getMessage(), e);
 		}
 	}
 	
 	public void insertCocProd() {
-		Key key = keyRepository.findOneByName("coc_prod");
-		TimestampUtil timestamp = timestampRepository.findOneByName("coc_prod");
-		System.out.println("old time-"+timestamp.getTimestamp());
+		Key key = queryService.findOneByName("coc_prod");
+		TimestampUtil timestamp = queryService.findTimeByName("coc_prod");
 		try {
 			String json = queryService.query(timestamp.getTimestamp(), key.getAccount_id(), key.getQuery_key());
-			if(queryService.getEvents(json).size() == 0) {
-				LOG.info("No new events!!!");
-				return;
-			}
 			
-			Long newTimestamp = queryService.readNewTimestamp(json);
-			System.out.println("New time-"+newTimestamp);
-			timestampRepository.updateTimestamp("coc_prod", newTimestamp);
-			LOG.info("Timestamp of Coc_Prod successfully updated!!!");
-			CoC_Prod coc = queryService.jsonToObjectCoc_Prod(json);
-			cocProdRepository.save(coc);
-			LOG.info("successfully inserted in coc_prod collection!!!"); 
+			if(!queryService.getEvents(json, "coc_prod")) return;
+			
+			Long newTimestamp = queryService.readNewTimestamp(json,"coc_prod");
+			
+			queryService.updateTimestamp("coc_prod", newTimestamp); 
+			Incidents incidents = queryService.jsonToObject(json);
+			
+			queryService.update(incidents, "coc_prod");   
+			 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		
+			LOG.error(e.getMessage(), e);
 		}
 	}
 }

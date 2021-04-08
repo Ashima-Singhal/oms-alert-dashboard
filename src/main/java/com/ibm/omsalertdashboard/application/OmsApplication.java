@@ -11,13 +11,14 @@ import com.ibm.omsalertdashboard.timerinfo.TimerInfo;
 @Service
 public class OmsApplication {
 
-	private final SchedulerService scheduler;
-	
 	@Autowired
-	public OmsApplication(final SchedulerService scheduler) {
-		super();
-		this.scheduler = scheduler;
-	}
+	private SchedulerService scheduler;
+	
+//	@Autowired
+//	public OmsApplication(final SchedulerService scheduler) {
+//		super();
+//		this.scheduler = scheduler;
+//	}
 
 	// method to run hello world job created
 	public void runHelloWorldJob() {

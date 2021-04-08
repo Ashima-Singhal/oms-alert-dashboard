@@ -1,6 +1,7 @@
 package com.ibm.omsalertdashboard.model;
 
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document
 public class CoC_IKSEvents {

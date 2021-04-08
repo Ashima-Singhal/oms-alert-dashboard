@@ -153,7 +153,6 @@ public class KeyRepositoryImpl implements KeyRepository{
 
 	@Override
 	public Key findOneByName(String name) {
-		// TODO Auto-generated method stub
 		Query query = new Query();
 		query.addCriteria(Criteria.where("name").is(name));
 		return mongoTemplate.findOne(query, Key.class);

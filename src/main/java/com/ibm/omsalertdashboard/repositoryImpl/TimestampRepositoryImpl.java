@@ -154,7 +154,6 @@ public class TimestampRepositoryImpl implements TimestampRepository{
 
 	@Override
 	public TimestampUtil findOneByName(String name) {
-		// TODO Auto-generated method stub
 		Query query = new Query();
 		query.addCriteria(Criteria.where("name").is(name));
 		return mongoTemplate.findOne(query, TimestampUtil.class); 
@@ -162,10 +161,8 @@ public class TimestampRepositoryImpl implements TimestampRepository{
 
 	@Override
 	public void updateTimestamp(String name,Long newTimestamp) {
-		// TODO Auto-generated method stub
 		Query query = new Query();
 		query.addCriteria(Criteria.where("name").is(name));
-		//TimestampUtil timestamp = mongoTemplate.findOne(query, TimestampUtil.class);
 		
 		Update update = new Update();
 		update.set("timestamp", newTimestamp);
