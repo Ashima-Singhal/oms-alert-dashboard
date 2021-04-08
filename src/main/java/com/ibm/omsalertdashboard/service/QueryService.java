@@ -2,6 +2,7 @@ package com.ibm.omsalertdashboard.service;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -134,45 +135,6 @@ public class QueryService {
 		return coc;
 	}
 	
-	public void updateJson(String json, String name) {
-//		List<Incidents> list = incidentRepo.findByName(name);/* .get(0).getIncidents().getResults().get(0).get("events") */;
-//		if(list == null) return; 
-		int i = 0;
-		if(name.equalsIgnoreCase("master")) i = 0;
-		else if(name.equalsIgnoreCase("coc_prod")) i = 1;
-		else i = 2;
-		
-		Incidents incidents = jsonToObject(json);
-		System.out.println("Incidents---"+incidents.toString()); 
-		//incidentRepo.updateJsonList(incidents, name); 
-		
-		//get list stored in db
-//		List<Events> oldList = incidentRepo.findByName(name).get(i).getIncidents().getResults().get(0).get("events");
-//		//if list is null insert incidents in db and return
-//		if(oldList == null) {
-//			incidentRepo.updateJsonList(incidents, name); 
-//			return;
-//		}
-//		//get new list from incidents
-//		List<Events> newList = incidents.getIncidents().getResults().get(0).get("events");
-//		//iterate new list
-//		for(int index = 0;index < newList.size();index++) {
-//			if(newList.get(index).getCurrent_state().equalsIgnoreCase("open")) {
-//				oldList.add(newList.get(index));
-//				System.out.println("NEW EVENT ADDED---"+ newList.get(index).getCondition_id());  
-//			}
-//			else {
-//				for(int old=0;old<oldList.size();old++) {
-//					if(oldList.get(old).getCondition_id() != newList.get(index).getCondition_id()) continue;
-//					oldList.get(old).setCurrent_state(newList.get(index).getCurrent_state()); 
-//					System.out.println("OLD EVENT UPDATED---" + oldList.get(old).getCondition_id());
-//				}
-//			}
-//		}
-//		
-//		incidents.getIncidents().getResults().get(0).put("events", oldList);
-//		incidentRepo.updateJsonList(incidents, name); 
-	}
 	
 	public Incidents jsonToObject(String jsonBody) {
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -189,9 +151,9 @@ public class QueryService {
 	public void update(Incidents incidents,String name) {
 		List<Incidents> incidentList = incidentRepo.findByName(name);
 	
-		if(incidentList.get(0).getResults() == null) {
+		if(incidentList.get(0) == null) {
 			LOG.info("No results!!!");  
-			incidentRepo.updateJsonList(incidents, name);
+			incidentRepo.updateJsonList(incidents, name, false); //false means there were no data before
 			return;
 		}
 		 
@@ -208,13 +170,15 @@ public class QueryService {
 				for(int j=0;j<oldEventsList.size();j++) {
 					if(oldEventsList.get(j).getIncident_id() != newEventsList.get(i).getIncident_id()) continue;
 					oldEventsList.get(j).setCurrent_state(newEventsList.get(i).getCurrent_state());
-					LOG.info("OLD EVENT UPDATED---"+oldEventsList.get(j).getIncident_id()); 
+					//add stmt to update end time
+					oldEventsList.get(j).setEndTimestamp(newEventsList.get(i).getTimestamp()); 
+					LOG.info("OLD EVENT UPDATED---"+oldEventsList.get(j).getIncident_id()+" START TIME= "+oldEventsList.get(j).getTimestamp()+" END TIME= "+oldEventsList.get(j).getEndTimestamp()); 
 				}
 			}
 		}
 		
 		incidents.getResults().get(0).put("events", oldEventsList);
-		incidentRepo.updateJsonList(incidents, name);
+		incidentRepo.updateJsonList(incidents, name, true); //true means there were data before
 		
 		LOG.info("Json data successfully inserted for "+name+" account!!!");  
 	}
@@ -232,5 +196,59 @@ public class QueryService {
 	public void updateTimestamp(String name, Long newTimestamp) {
 		timeRepo.updateTimestamp(name, newTimestamp); 
 		LOG.info("Timestamp for "+name+" successfully updated!!!");  
+	}
+	
+	public List<Events> getEvents(String status){
+		
+		 List<Incidents> incidentList = incidentRepo.findAll();
+		 //System.out.println(list.get(2).getResults().get(0).get("events").get(0).getIncident_id()); 
+		 List<Events> eventsList = new ArrayList<>();
+		 
+		 for(int i=0;i<incidentList.size();i++) {
+			 List<Events> tempList = incidentList.get(i).getResults().get(0).get("events");
+			 for(Events event:tempList) {
+				 if(event.getCurrent_state().equalsIgnoreCase(status))
+					 eventsList.add(event);
+			 }
+		 }
+		 
+		 return eventsList;
+	}
+	
+	public Events updateEvent(long incident_id,String slack_url) {
+		List<Incidents> incidentList = incidentRepo.findAll();
+		//Events e = null;
+		String name = null;
+		for(int i=0;i<incidentList.size();i++) {
+			List<Events> tempList = incidentList.get(i).getResults().get(0).get("events");
+			for(Events event: tempList) {
+				if(event.getIncident_id() == incident_id) {
+					if(i == 0) name = "master";
+					else if(i == 1) name = "coc_iks";
+					else name = "coc_prod";
+					break;
+				}
+			}
+		}
+		return update(incidentRepo.findByName(name).get(0), incident_id, name, slack_url);
+	}
+	
+	public Events update(Incidents incident,long incident_id,String name,String slack_url) {
+		List<Events> events = incident.getResults().get(0).get("events");
+		Events e = null;
+		for(Events event: events) {
+			if(event.getIncident_id() == incident_id) {
+				event.setSlack_url(slack_url);
+				e = event;
+				break;
+			}
+		}
+		
+		incident.getResults().get(0).put("events", events);
+		
+		incidentRepo.updateJsonList(incident, name);
+		
+		LOG.info("Slack URL for incident id "+incident_id+" successfully updated");  
+		return e;
 	}
 }

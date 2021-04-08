@@ -16,6 +16,7 @@ import org.springframework.data.mongodb.core.query.Update;
 
 import com.ibm.omsalertdashboard.model.CoC_IKS;
 import com.ibm.omsalertdashboard.model.CoC_Prod;
+import com.ibm.omsalertdashboard.model.Events;
 import com.ibm.omsalertdashboard.model.Incidents;
 import com.ibm.omsalertdashboard.model.Master;
 import com.ibm.omsalertdashboard.repository.IncidentsRepository;
@@ -34,7 +35,7 @@ public class IncidentsRepositoryImpl implements IncidentsRepository{
 	@Override
 	public List<Incidents> findAll() {
 		// TODO Auto-generated method stub
-		return null;
+		return mongoTemplate.findAll(Incidents.class, "incidents");
 	}
 
 	@Override
@@ -198,8 +199,17 @@ public class IncidentsRepositoryImpl implements IncidentsRepository{
 	}
 
 	@Override
-	public void updateJsonList(Incidents incidents, String name) {
-		// TODO Auto-generated method stub
+	public void updateJsonList(Incidents incidents, String name,boolean flag) {
+		// do this here only if inserting data fro the first time
+		if(!flag) {
+			List<Events> events = incidents.getResults().get(0).get("events");
+			
+			for(Events event:events) {
+				if(event.getCurrent_state().equalsIgnoreCase("closed"))
+					event.setEndTimestamp(event.getTimestamp());
+			}
+		}
+		
 		Query query = new Query();
 		query.addCriteria(Criteria.where("name").is(name));
 		
@@ -211,6 +221,18 @@ public class IncidentsRepositoryImpl implements IncidentsRepository{
 		mongoTemplate.upsert(query, update, Incidents.class);
 	}
 
+	@Override
+	public void updateJsonList(Incidents incidents, String name) {
+		Query query = new Query();
+		query.addCriteria(Criteria.where("name").is(name));
+		
+		Update update = new Update();
+		update.set("result", incidents.getResults());
+		update.set("performanceStats", incidents.getPerformanceStats());
+		update.set("metadata", incidents.getMetadata());
+		
+		mongoTemplate.upsert(query, update, Incidents.class);
+	}
 	
 	
 

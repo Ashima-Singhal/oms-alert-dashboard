@@ -18,5 +18,6 @@ public interface IncidentsRepository extends MongoRepository<Incidents,String>{
 	public void updateCocIksIncidents(CoC_IKS iks,String name);
 	
 	public List<Incidents> findByName(String name);
+	public void updateJsonList(Incidents incidents,String name,boolean flag);
 	public void updateJsonList(Incidents incidents,String name);
 }

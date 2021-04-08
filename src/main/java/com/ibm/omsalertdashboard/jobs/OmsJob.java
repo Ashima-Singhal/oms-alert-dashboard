@@ -22,6 +22,7 @@ import com.ibm.omsalertdashboard.repository.IncidentsRepository;
 import com.ibm.omsalertdashboard.repository.KeyRepository;
 import com.ibm.omsalertdashboard.repository.MasterRepository;
 import com.ibm.omsalertdashboard.repository.TimestampRepository;
+import com.ibm.omsalertdashboard.repositoryImpl.IncidentsRepositoryImpl;
 import com.ibm.omsalertdashboard.service.QueryService;
 
 @Component
@@ -31,7 +32,7 @@ public class OmsJob implements Job{
 	private  QueryService queryService;
 	@Autowired
 	private static final Logger LOG = LoggerFactory.getLogger(OmsJob.class);
-	
+		
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 		
@@ -56,7 +57,8 @@ public class OmsJob implements Job{
 			
 			Incidents incidents = queryService.jsonToObject(json);
 			
-			queryService.update(incidents, "master"); 
+			queryService.update(incidents, "master");
+			//incidentRepo.updateJsonList(incidents, "master"); 
 			 
 		} catch (IOException e) {
 			
@@ -79,7 +81,7 @@ public class OmsJob implements Job{
 			Incidents incidents = queryService.jsonToObject(json);
 			
 			queryService.update(incidents, "coc_iks");  
-			
+			//incidentRepo.updateJsonList(incidents, "coc_iks"); 
 		} catch (IOException e) {
 			
 			LOG.error(e.getMessage(), e);
@@ -100,7 +102,7 @@ public class OmsJob implements Job{
 			Incidents incidents = queryService.jsonToObject(json);
 			
 			queryService.update(incidents, "coc_prod");   
-			 
+			//cidentRepo.updateJsonList(incidents, "coc_prod");   
 		} catch (IOException e) {
 		
 			LOG.error(e.getMessage(), e);

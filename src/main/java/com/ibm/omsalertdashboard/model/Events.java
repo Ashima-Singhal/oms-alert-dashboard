@@ -22,7 +22,7 @@ public class Events {
 	private String runbook_url;
 	private String severity;
 	private long timestamp;
-	
+	private String slack_url; // new field added - not coming from new relic
 	//iks specific
 	private String actionOwner;
 	private String alertType;
@@ -36,6 +36,7 @@ public class Events {
 	private String violation_callback_url;
 	private String violation_chart_url;
 	private String sev;
+	private long endTimestamp;
 	
 	public long getAccount_id() {
 		return account_id;
@@ -205,6 +206,19 @@ public class Events {
 	public void setSev(String sev) {
 		this.sev = sev;
 	}
+	
+	public String getSlack_url() {
+		return slack_url;
+	}
+	public void setSlack_url(String slack_url) {
+		this.slack_url = slack_url;
+	}
+	public long getEndTimestamp() {
+		return endTimestamp;
+	}
+	public void setEndTimestamp(long endTimestamp) {
+		this.endTimestamp = endTimestamp;
+	}
 	@Override
 	public String toString() {
 		return "Events [account_id=" + account_id + ", account_name=" + account_name + ", condition_id=" + condition_id
@@ -212,15 +226,15 @@ public class Events {
 				+ ", event_type=" + event_type + ", incident_acknowledge_url=" + incident_acknowledge_url
 				+ ", incident_id=" + incident_id + ", incident_url=" + incident_url + ", owner=" + owner
 				+ ", policy_name=" + policy_name + ", policy_url=" + policy_url + ", runbook_url=" + runbook_url
-				+ ", severity=" + severity + ", timestamp=" + timestamp + ", actionOwner=" + actionOwner
-				+ ", alertType=" + alertType + ", closed_violations_count_critical=" + closed_violations_count_critical
-				+ ", closed_violations_count_warning=" + closed_violations_count_warning + ", condition_family_id="
-				+ condition_family_id + ", duration=" + duration + ", namespaceName=" + namespaceName
-				+ ", open_violations_count_critical=" + open_violations_count_critical
-				+ ", open_violations_count_warning=" + open_violations_count_warning + ", violation_callback_url="
-				+ violation_callback_url + ", violation_chart_url=" + violation_chart_url + ", sev=" + sev + "]";
+				+ ", severity=" + severity + ", timestamp=" + timestamp + ", slack_url=" + slack_url + ", actionOwner="
+				+ actionOwner + ", alertType=" + alertType + ", closed_violations_count_critical="
+				+ closed_violations_count_critical + ", closed_violations_count_warning="
+				+ closed_violations_count_warning + ", condition_family_id=" + condition_family_id + ", duration="
+				+ duration + ", namespaceName=" + namespaceName + ", open_violations_count_critical="
+				+ open_violations_count_critical + ", open_violations_count_warning=" + open_violations_count_warning
+				+ ", violation_callback_url=" + violation_callback_url + ", violation_chart_url=" + violation_chart_url
+				+ ", sev=" + sev + ", endTimestamp=" + endTimestamp + "]";
 	}
-	
 	
 	
 }
