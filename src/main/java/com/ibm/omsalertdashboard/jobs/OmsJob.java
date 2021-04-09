@@ -32,7 +32,9 @@ public class OmsJob implements Job{
 	private  QueryService queryService;
 	@Autowired
 	private static final Logger LOG = LoggerFactory.getLogger(OmsJob.class);
-		
+//	@Autowired
+//	private IncidentsRepositoryImpl incidentRepo;
+	
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 		

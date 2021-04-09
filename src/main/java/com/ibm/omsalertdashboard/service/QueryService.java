@@ -151,7 +151,7 @@ public class QueryService {
 	public void update(Incidents incidents,String name) {
 		List<Incidents> incidentList = incidentRepo.findByName(name);
 	
-		if(incidentList.get(0) == null) {
+		if(incidentList == null) {
 			LOG.info("No results!!!");  
 			incidentRepo.updateJsonList(incidents, name, false); //false means there were no data before
 			return;
@@ -224,8 +224,8 @@ public class QueryService {
 			for(Events event: tempList) {
 				if(event.getIncident_id() == incident_id) {
 					if(i == 0) name = "master";
-					else if(i == 1) name = "coc_iks";
-					else name = "coc_prod";
+					else if(i == 1) name = "coc_prod";
+					else name = "coc_iks";
 					break;
 				}
 			}
