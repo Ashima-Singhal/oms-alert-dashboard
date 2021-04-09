@@ -200,7 +200,7 @@ public class IncidentsRepositoryImpl implements IncidentsRepository{
 
 	@Override
 	public void updateJsonList(Incidents incidents, String name,boolean flag) {
-		// do this here only if inserting data fro the first time
+		// do this here only if inserting data for the first time
 		if(!flag) {
 			List<Events> events = incidents.getResults().get(0).get("events");
 			
