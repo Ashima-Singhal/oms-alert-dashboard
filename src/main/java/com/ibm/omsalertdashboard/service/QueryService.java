@@ -38,15 +38,6 @@ import com.ibm.omsalertdashboard.repositoryImpl.TimestampRepositoryImpl;
 @Service
 public class QueryService {
 
-	//private String queryKey;
-	//private String accountId;
-	
-	
-//	public QueryService(String queryKey, String accountId) {
-//		super();
-//		this.queryKey = queryKey;
-//		this.accountId = accountId;
-//	}
 	@Autowired
 	private static final Logger LOG = LoggerFactory.getLogger(QueryService.class);
 	@Autowired
@@ -96,43 +87,6 @@ public class QueryService {
 				.getAsJsonObject().get("events").getAsJsonArray().get(0).getAsJsonObject().get("timestamp"); 
 		LOG.info("New Timestamp for "+name+" ="+ timestamp.getAsString()); 
 		return Long.parseLong(timestamp.getAsString());
-	}
-	
-	public Master jsonToObjectMaster(String jsonBody) {
-		ObjectMapper objectMapper = new ObjectMapper();
-		Master master = null;
-		try {
-			master = objectMapper.readValue(jsonBody, Master.class);
-			//System.out.println(master.getResultMap().get(0)+"---------");
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return master;
-	}
-	
-	public CoC_IKS jsonToObjectCoc_IKS(String jsonBody) {
-		ObjectMapper objectMapper = new ObjectMapper();
-		CoC_IKS coc = null;
-		try {
-			coc = objectMapper.readValue(jsonBody, CoC_IKS.class);
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return coc;
-	}
-	
-	public CoC_Prod jsonToObjectCoc_Prod(String jsonBody) {
-		ObjectMapper objectMapper = new ObjectMapper();
-		CoC_Prod coc = null;
-		try {
-			coc = objectMapper.readValue(jsonBody, CoC_Prod.class);
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return coc;
 	}
 	
 	
@@ -201,7 +155,6 @@ public class QueryService {
 	public List<Events> getEvents(String status){
 		
 		 List<Incidents> incidentList = incidentRepo.findAll();
-		 //System.out.println(list.get(2).getResults().get(0).get("events").get(0).getIncident_id()); 
 		 List<Events> eventsList = new ArrayList<>();
 		 
 		 for(int i=0;i<incidentList.size();i++) {
@@ -217,15 +170,12 @@ public class QueryService {
 	
 	public Events updateEvent(long incident_id,String slack_url) {
 		List<Incidents> incidentList = incidentRepo.findAll();
-		//Events e = null;
 		String name = null;
 		for(int i=0;i<incidentList.size();i++) {
 			List<Events> tempList = incidentList.get(i).getResults().get(0).get("events");
 			for(Events event: tempList) {
 				if(event.getIncident_id() == incident_id) {
-					if(i == 0) name = "master";
-					else if(i == 1) name = "coc_prod";
-					else name = "coc_iks";
+					name = incidentList.get(i).getName();
 					break;
 				}
 			}
