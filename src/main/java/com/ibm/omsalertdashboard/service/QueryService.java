@@ -152,7 +152,9 @@ public class QueryService {
 		LOG.info("Timestamp for "+name+" successfully updated!!!");  
 	}
 	
-	public List<Events> getEvents(String status){
+	//method to get events based on current status and customer name
+	public List<Events> getEventsList(String status,String account_name){
+		 if(account_name.equalsIgnoreCase("")) return getEventsList(status);
 		
 		 List<Incidents> incidentList = incidentRepo.findAll();
 		 List<Events> eventsList = new ArrayList<>();
@@ -160,7 +162,23 @@ public class QueryService {
 		 for(int i=0;i<incidentList.size();i++) {
 			 List<Events> tempList = incidentList.get(i).getResults().get(0).get("events");
 			 for(Events event:tempList) {
-				 if(event.getCurrent_state().equalsIgnoreCase(status))
+				 if(event.getCurrent_state().equalsIgnoreCase(status) && event.getAccount_name().equalsIgnoreCase(account_name)) 
+					 eventsList.add(event);
+			 }
+		 }
+		 
+		 return eventsList;
+	}
+	
+	public List<Events> getEventsList(String status){
+		
+		 List<Incidents> incidentList = incidentRepo.findAll();
+		 List<Events> eventsList = new ArrayList<>();
+		 
+		 for(int i=0;i<incidentList.size();i++) {
+			 List<Events> tempList = incidentList.get(i).getResults().get(0).get("events");
+			 for(Events event:tempList) {
+				 if(event.getCurrent_state().equalsIgnoreCase(status)) 
 					 eventsList.add(event);
 			 }
 		 }

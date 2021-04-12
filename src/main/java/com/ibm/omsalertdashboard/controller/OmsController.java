@@ -53,9 +53,10 @@ public class OmsController {
 	}
 	
 	@GetMapping("/events-list") 
-	public ResponseEntity<List<Events>> getEvents(@RequestParam("status") String status){
+	public ResponseEntity<List<Events>> getEvents(@RequestParam("status") String status,@RequestParam("account_name") String account_name){
 		//queryService.getEvents(status); 
-		return ResponseEntity.ok(queryService.getEvents(status));
+		if(account_name == null || account_name.length() == 0) return ResponseEntity.ok(queryService.getEventsList(status)); 
+		return ResponseEntity.ok(queryService.getEventsList(status, account_name)); 
 	}
 	
 	@PatchMapping("/update-event")

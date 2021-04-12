@@ -60,7 +60,7 @@ public class OmsJob implements Job{
 			Incidents incidents = queryService.jsonToObject(json);
 			
 			queryService.update(incidents, "master");
-			 //incidentRepo.updateJsonList(incidents, "master", false); 
+			//incidentRepo.updateJsonList(incidents, "master", false); 
 		} catch (IOException e) {
 			
 			LOG.error(e.getMessage(), e); 
