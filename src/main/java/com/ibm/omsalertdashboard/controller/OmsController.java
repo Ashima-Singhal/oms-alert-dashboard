@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 //import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -60,7 +61,8 @@ public class OmsController {
 	}
 	
 	@PatchMapping("/update-event")
-	public ResponseEntity<Events> updateEvent(@RequestParam("alert_id") long alert_id,@RequestParam("slack_url")String slack_url){
-		return ResponseEntity.ok(queryService.updateEvent(alert_id, slack_url)); 
+	public ResponseEntity<Events> updateEvent(@RequestParam("alert_id") long alert_id,@RequestBody Map<String,String> event){
+		System.out.println("API hit---"+ alert_id+" "+event.get("slack_url")); 
+		return ResponseEntity.ok(queryService.updateEvent(alert_id, event.get("slack_url")));  
 	}
 }
