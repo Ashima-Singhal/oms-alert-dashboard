@@ -198,9 +198,11 @@ public class IncidentsRepositoryImpl implements IncidentsRepository{
 		return mongoTemplate.find(query, Incidents.class); 
 	}
 
+	//method to insert events in the form of json in db
 	@Override
 	public void updateJsonList(Incidents incidents, String name,boolean flag) {
 		// do this here only if inserting data for the first time
+		//if data inserted for first time update end time for closed events equal to start time
 		if(!flag) {
 			List<Events> events = incidents.getResults().get(0).get("events");
 			

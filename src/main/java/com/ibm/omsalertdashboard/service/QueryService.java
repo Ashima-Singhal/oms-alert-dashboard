@@ -3,8 +3,11 @@ package com.ibm.omsalertdashboard.service;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -33,6 +36,7 @@ import com.ibm.omsalertdashboard.repository.TimestampRepository;
 import com.ibm.omsalertdashboard.repositoryImpl.IncidentsRepositoryImpl;
 import com.ibm.omsalertdashboard.repositoryImpl.KeyRepositoryImpl;
 import com.ibm.omsalertdashboard.repositoryImpl.TimestampRepositoryImpl;
+
 
 
 @Service
@@ -101,40 +105,104 @@ public class QueryService {
 		return incidents;
 	}
 	
-	
+	//service method to insert incidents list in db
+	//if incident is open insert directly
+	//else update the status of already opened status
 	public void update(Incidents incidents,String name) {
-		List<Incidents> incidentList = incidentRepo.findByName(name);
-	
+//		List<Incidents> incidentList = incidentRepo.findByName(name);
+//		Map<Long, Events> alreadyClosedEvents = new HashMap<>();
+//		if(incidentList == null) {
+//			LOG.info("No results!!!");  
+//			incidentRepo.updateJsonList(incidents, name, false); //false means there were no data before
+//			return;
+//		}
+//		LOG.info("incidents from db-"+incidentList.get(0).getResults().size());
+//		
+//		List<Events> newEventsList = incidents.getResults().get(0).get("events");
+//		List<Events> oldEventsList = incidentList.get(0).getResults().get(0).get("events");
+//		
+//		for(int i=0;i<newEventsList.size();i++) {
+//			LOG.debug("inside for loop"+newEventsList.get(i).getAccount_id()); 
+//			if(newEventsList.get(i).getCurrent_state().equalsIgnoreCase("open")) {
+//				LOG.debug("if incident is open"); 
+//				oldEventsList.add(newEventsList.get(i));
+//				LOG.info("NEW EVENT ADDED---"+newEventsList.get(i).getIncident_id());
+//				continue;
+//			}
+//			else {
+//				for(int j=0;j<oldEventsList.size();j++) {
+//					if(oldEventsList.get(j).getIncident_id() != newEventsList.get(i).getIncident_id()) {
+//						if(!alreadyClosedEvents.containsKey(newEventsList.get(i).getIncident_id()))
+//							alreadyClosedEvents.put(newEventsList.get(i).getIncident_id(), newEventsList.get(i));
+//						continue;
+//					}
+//					oldEventsList.get(j).setCurrent_state(newEventsList.get(i).getCurrent_state());
+//					//add stmt to update end time
+//					oldEventsList.get(j).setEndTimestamp(newEventsList.get(i).getTimestamp()); 
+//					LOG.info("OLD EVENT UPDATED---"+oldEventsList.get(j).getIncident_id()+" START TIME= "+oldEventsList.get(j).getTimestamp()+" END TIME= "+oldEventsList.get(j).getEndTimestamp());
+//					if(alreadyClosedEvents.containsKey(newEventsList.get(i).getIncident_id()))
+//						alreadyClosedEvents.remove(newEventsList.get(i).getIncident_id());
+//					LOG.info("HASHMAP UPDATED"); 
+//				}
+//			}
+//		}
+//		if(alreadyClosedEvents.size() > 0) {
+//			Set<Long> keySet = alreadyClosedEvents.keySet();
+//			for(Long key:keySet) {
+//				oldEventsList.add(alreadyClosedEvents.get(key));
+//				LOG.info("EVENTS LIST UPDATED WITH EVENT ID-"+alreadyClosedEvents.get(key).getIncident_id()); 
+//			}
+//		}
+//		incidents.getResults().get(0).put("events", oldEventsList);
+//		incidentRepo.updateJsonList(incidents, name, true); //true means there were data before
+//		
+//		LOG.info("Json data successfully inserted for "+name+" account!!!");  
+		
+		
+		List<Incidents> incidentList = incidentRepo.findByName(name);//retrieving incident list from db
 		if(incidentList == null) {
-			LOG.info("No results!!!");  
-			incidentRepo.updateJsonList(incidents, name, false); //false means there were no data before
+			LOG.info("NO OLD INCIDENTS");
+			incidentRepo.updateJsonList(incidents, name, false);
 			return;
 		}
-		 
-		List<Events> newEventsList = incidents.getResults().get(0).get("events");
-		List<Events> oldEventsList = incidentList.get(0).getResults().get(0).get("events");
 		
+		Map<Long, Events> incidentMap = new HashMap<>();
+		List<Events> oldEventlList = incidentList.get(0).getResults().get(0).get("events");
+		//loop to put all incidents retrieved into hashmap with incident id as key
+		for(int i=0;i<oldEventlList.size();i++) {
+			incidentMap.put(oldEventlList.get(i).getIncident_id(), oldEventlList.get(i));
+		}
+		
+		//putting new events retrieved from new relic api in newEventsList
+		List<Events> newEventsList = incidents.getResults().get(0).get("events");
+		
+		//updating all the events 
 		for(int i=0;i<newEventsList.size();i++) {
-			if(newEventsList.get(i).getCurrent_state().equalsIgnoreCase("open")) {
-				oldEventsList.add(newEventsList.get(i));
-				LOG.info("NEW EVENT ADDED---"+newEventsList.get(i).getIncident_id());
-				continue;
+			//if event is already present just update current state and end timestamp
+			if(incidentMap.containsKey(newEventsList.get(i).getIncident_id())) {
+				LOG.info("EVENT "+newEventsList.get(i).getIncident_id()+" ALREADY PRESENT");
+				LOG.info("START TIME-"+incidentMap.get(newEventsList.get(i).getIncident_id()).getTimestamp()+" END TIME-"+newEventsList.get(i).getTimestamp()); 
+				Events old = incidentMap.get(newEventsList.get(i).getIncident_id());
+				old.setCurrent_state(newEventsList.get(i).getCurrent_state());//updating current state
+				old.setEndTimestamp(newEventsList.get(i).getTimestamp()); //updating end time
+				incidentMap.put(newEventsList.get(i).getIncident_id(), old);
 			}
-			else {
-				for(int j=0;j<oldEventsList.size();j++) {
-					if(oldEventsList.get(j).getIncident_id() != newEventsList.get(i).getIncident_id()) continue;
-					oldEventsList.get(j).setCurrent_state(newEventsList.get(i).getCurrent_state());
-					//add stmt to update end time
-					oldEventsList.get(j).setEndTimestamp(newEventsList.get(i).getTimestamp()); 
-					LOG.info("OLD EVENT UPDATED---"+oldEventsList.get(j).getIncident_id()+" START TIME= "+oldEventsList.get(j).getTimestamp()+" END TIME= "+oldEventsList.get(j).getEndTimestamp()); 
-				}
+			else {//if event is new directly add it
+				incidentMap.put(newEventsList.get(i).getIncident_id(), newEventsList.get(i));
+				LOG.info("NEW EVENT "+newEventsList.get(i).getIncident_id()+" ADDED");  
 			}
 		}
 		
-		incidents.getResults().get(0).put("events", oldEventsList);
-		incidentRepo.updateJsonList(incidents, name, true); //true means there were data before
+		//iterate hashmap to put events in a list
+		Set<Long> keys = incidentMap.keySet();
+		List<Events> upadatedList = new ArrayList<>();
+		for(Long key:keys) {
+			upadatedList.add(incidentMap.get(key));
+		}
 		
-		LOG.info("Json data successfully inserted for "+name+" account!!!");  
+		incidents.getResults().get(0).put("events", upadatedList);
+		incidentRepo.updateJsonList(incidents, name, true);
+		LOG.info("JSON DATA SUCCESSFULLY INSERTED FOR "+name+" ACCOUNT");  
 	}
 	
 	public Key findOneByName(String name) {
@@ -218,5 +286,16 @@ public class QueryService {
 		
 		LOG.info("Slack URL for incident id "+incident_id+" successfully updated");  
 		return e;
+	}
+	
+	public Object[] findAllCustomers(){
+		List<Incidents> incidents = incidentRepo.findAll();
+		Set<String> customerSet = new HashSet<>();
+		for(int i=0;i<incidents.size();i++) {
+			List<Events> eventList = incidents.get(i).getResults().get(0).get("events");
+			for(Events event:eventList)
+				customerSet.add(event.getAccount_name());
+		}
+		return customerSet.toArray();
 	}
 }

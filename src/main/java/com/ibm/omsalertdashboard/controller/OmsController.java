@@ -62,7 +62,12 @@ public class OmsController {
 	
 	@PatchMapping("/update-event")
 	public ResponseEntity<Events> updateEvent(@RequestParam("alert_id") long alert_id,@RequestBody Map<String,String> event){
-		System.out.println("API hit---"+ alert_id+" "+event.get("slack_url")); 
+		//System.out.println("API hit---"+ alert_id+" "+event.get("slack_url")); 
 		return ResponseEntity.ok(queryService.updateEvent(alert_id, event.get("slack_url")));  
+	}
+	
+	@GetMapping("/get-customers")
+	public ResponseEntity<Object[]> getAllCustomers(){
+		return ResponseEntity.ok(queryService.findAllCustomers());
 	}
 }
