@@ -60,7 +60,7 @@ public class OmsJob implements Job{
 			Incidents incidents = queryService.jsonToObject(json);
 			
 			queryService.update(incidents, "master");
-			//incidentRepo.updateJsonList(incidents, "master"); 
+			//incidentRepo.updateJsonList(incidents, "master",false); 
 		} catch (IOException e) {
 			
 			LOG.error(e.getMessage(), e); 
@@ -82,7 +82,7 @@ public class OmsJob implements Job{
 			Incidents incidents = queryService.jsonToObject(json);
 			
 			queryService.update(incidents, "coc_iks");  
-			//incidentRepo.updateJsonList(incidents, "coc_iks"); 
+			//incidentRepo.updateJsonList(incidents, "coc_iks",false); 
 		} catch (IOException e) {
 			
 			LOG.error(e.getMessage(), e);
@@ -103,7 +103,7 @@ public class OmsJob implements Job{
 			Incidents incidents = queryService.jsonToObject(json);
 			
 			queryService.update(incidents, "coc_prod");   
-			//incidentRepo.updateJsonList(incidents, "coc_prod");  
+			//incidentRepo.updateJsonList(incidents, "coc_prod",false);  
 		} catch (IOException e) {
 		
 			LOG.error(e.getMessage(), e);

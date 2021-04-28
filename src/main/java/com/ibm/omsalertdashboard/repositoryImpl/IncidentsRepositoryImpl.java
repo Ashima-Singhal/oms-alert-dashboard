@@ -1,8 +1,12 @@
 package com.ibm.omsalertdashboard.repositoryImpl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -202,14 +206,19 @@ public class IncidentsRepositoryImpl implements IncidentsRepository{
 	@Override
 	public void updateJsonList(Incidents incidents, String name,boolean flag) {
 		// do this here only if inserting data for the first time
-		//if data inserted for first time update end time for closed events equal to start time
+		//if events are duplicate insert only latest event
 		if(!flag) {
 			List<Events> events = incidents.getResults().get(0).get("events");
-			
+			Map<Long,Events> eventMap = new HashMap<>();//to keep track of duplicate events sent by api
 			for(Events event:events) {
-				if(event.getCurrent_state().equalsIgnoreCase("closed"))
-					event.setEndTimestamp(event.getTimestamp());
+				if(!eventMap.containsKey(event.getIncident_id()))
+					eventMap.put(event.getIncident_id(), event);
 			}
+			events.clear();
+			for(Long key:eventMap.keySet()) {
+				events.add(eventMap.get(key)); 
+			}
+			incidents.getResults().get(0).put("events", events);
 		}
 		
 		Query query = new Query();

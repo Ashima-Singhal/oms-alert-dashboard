@@ -70,4 +70,9 @@ public class OmsController {
 	public ResponseEntity<Object[]> getAllCustomers(){
 		return ResponseEntity.ok(queryService.findAllCustomers());
 	}
+	
+	@GetMapping("/get-conditions")
+	public ResponseEntity<Object[]> getAllConditions(){
+		return ResponseEntity.ok(queryService.findAllConditions());
+	}
 }

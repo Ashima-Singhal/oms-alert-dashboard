@@ -127,12 +127,23 @@ public class QueryService {
 		
 		//putting new events retrieved from new relic api in newEventsList
 		List<Events> newEventsList = incidents.getResults().get(0).get("events");
-		Set<Long> newIncidentIdSet = new HashSet<>();
+		Set<Long> newIncidentIdSet = new HashSet<>();// to keep track of duplicate events from api
 		//updating all the events 
 		for(int i=0;i<newEventsList.size();i++) {
 			if(!newIncidentIdSet.contains(newEventsList.get(i).getIncident_id())) {
-				incidentMap.put(newEventsList.get(i).getIncident_id(), newEventsList.get(i));
-				LOG.info("i am inside this condition"); 
+				if(newEventsList.get(i).getCurrent_state().equalsIgnoreCase("closed") && incidentMap.containsKey(newEventsList.get(i).getIncident_id())) {
+					incidentMap.get(newEventsList.get(i).getIncident_id()).setCurrent_state("closed");
+					incidentMap.get(newEventsList.get(i).getIncident_id()).setEndTimestamp(newEventsList.get(i).getTimestamp());
+					LOG.info("OLD EVENT UPDATED. INCIDENT ID = "+newEventsList.get(i).getIncident_id());
+					LOG.info("START TIME = "+ incidentMap.get(newEventsList.get(i).getIncident_id()).getTimestamp()+" END TIME = "+ incidentMap.get(newEventsList.get(i).getIncident_id()).getEndTimestamp()); 
+				}
+				else {
+					incidentMap.put(newEventsList.get(i).getIncident_id(), newEventsList.get(i));
+					LOG.info("NEW EVENT ADDED.");
+					LOG.info("INCIDENT ID = "+newEventsList.get(i).getIncident_id()); 
+					LOG.info("CURRENT STATE = "+newEventsList.get(i).getCurrent_state()); 
+				}
+				
 			}
 			
 			
@@ -244,5 +255,19 @@ public class QueryService {
 				customerSet.add(event.getAccount_name());
 		}
 		return customerSet.toArray();
+	}
+	
+	public Object[] findAllConditions() {
+		List<Incidents> incidents = incidentRepo.findAll();
+		Set<String> condtionSet = new HashSet<String>();
+		for(int i=0;i<incidents.size();i++) {
+			List<Events> eventList = incidents.get(i).getResults().get(0).get("events");
+			for(Events event:eventList) {
+				condtionSet.add(event.getCondition_name());
+				//LOG.info(event.getCondition_name()); 
+			}
+				
+		}
+		return condtionSet.toArray();
 	}
 }
