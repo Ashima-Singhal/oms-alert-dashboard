@@ -196,6 +196,7 @@ public class QueryService {
 		 return eventsList;
 	}
 	
+	//service method to get event list according to status open or closed
 	public List<Events> getEventsList(String status){
 		
 		 List<Incidents> incidentList = incidentRepo.findAll();
@@ -210,6 +211,19 @@ public class QueryService {
 		 }
 		 
 		 return eventsList;
+	}
+	
+	//service method to get all events
+	public List<Events> getEventsList(){
+		List<Incidents> incidentList = incidentRepo.findAll();
+		List<Events> eventsList = new ArrayList<>();
+		
+		for(int i=0;i<incidentList.size();i++) {
+			List<Events> tempList = incidentList.get(i).getResults().get(0).get("events");
+			for(Events event:tempList)
+				eventsList.add(event);
+		}
+		return eventsList;
 	}
 	
 	public Events updateEvent(long incident_id,String slack_url) {

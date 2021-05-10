@@ -35,6 +35,7 @@ public class TimerUtil {
 		SimpleScheduleBuilder builder = SimpleScheduleBuilder.simpleSchedule().withIntervalInMilliseconds(info.getRepeatIntervalMs());
 		
 		if(info.isRunForever()) {
+			System.out.println("run forever"); 
 			builder = builder.repeatForever();
 		}else {
 			builder = builder.withRepeatCount(info.getTotalFireCount() - 1);

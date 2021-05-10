@@ -8,7 +8,7 @@ import com.ibm.omsalertdashboard.jobs.OmsJob;
 import com.ibm.omsalertdashboard.service.SchedulerService;
 import com.ibm.omsalertdashboard.timerinfo.TimerInfo;
 
-@Service
+@Service 
 public class OmsApplication {
 
 	@Autowired
@@ -33,8 +33,9 @@ public class OmsApplication {
 	
 	public void runOmsJob() {
 		final TimerInfo info = new TimerInfo();
-		info.setTotalFireCount(1);
-		info.setRepeatIntervalMs(2000);
+		//info.setTotalFireCount(1);
+		info.setRunForever(true); 
+		info.setRepeatIntervalMs(300000); 
 		info.setInitialOffsetMs(1000);
 		
 		scheduler.schedule(OmsJob.class, info); 

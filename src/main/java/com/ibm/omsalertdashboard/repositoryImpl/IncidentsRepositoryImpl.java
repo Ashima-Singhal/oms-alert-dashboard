@@ -211,8 +211,11 @@ public class IncidentsRepositoryImpl implements IncidentsRepository{
 			List<Events> events = incidents.getResults().get(0).get("events");
 			Map<Long,Events> eventMap = new HashMap<>();//to keep track of duplicate events sent by api
 			for(Events event:events) {
-				if(!eventMap.containsKey(event.getIncident_id()))
+				if(!eventMap.containsKey(event.getIncident_id())) {
 					eventMap.put(event.getIncident_id(), event);
+					if(eventMap.get(event.getIncident_id()).getCurrent_state().equalsIgnoreCase("closed"))
+						eventMap.get(event.getIncident_id()).setEndTimestamp(event.getTimestamp()); 
+				}
 			}
 			events.clear();
 			for(Long key:eventMap.keySet()) {

@@ -37,6 +37,7 @@ public class SchedulerService {
 		
 		try {
 			scheduler.scheduleJob(jobDetail, trigger);
+			LOG.info("scheduling job"); 
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
 			LOG.error(e.getMessage(),e); 
