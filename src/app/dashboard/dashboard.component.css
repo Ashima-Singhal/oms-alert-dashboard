@@ -1,0 +1,9 @@
+.my-pagination /deep/ .ngx-pagination .current {
+    background: black;
+  }
+
+
+.table{
+  font-size: smaller;
+}
+  
