@@ -1,5 +1,8 @@
 package com.ibm.omsalertdashboard.model;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection = "users") 
 public class JwtRequest {
 
 	private String username;
@@ -33,8 +36,7 @@ public class JwtRequest {
 //	}
 	@Override
 	public String toString() {
-		return "User [username=" + username + ", password=" + password + "]";
+		return "JwtRequest [username=" + username + ", password=" + password + "]";
 	}
-	
 	
 }
