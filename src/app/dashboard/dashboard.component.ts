@@ -40,6 +40,14 @@ export class DashboardComponent implements OnInit {
   alerts_type: any = ['open','closed'];
   customers:any =[];
   conditions:any= [];
+  searchCond={
+    current_state:'',
+    account_name:'',
+    condition_name:'',
+    timestamp:Number,
+    endTimestamp:Number
+  }
+
 
   dateRange = new FormGroup({
     start: new FormControl(),
@@ -84,28 +92,6 @@ export class DashboardComponent implements OnInit {
     return this.dateRange.controls;
   }
 
-  //code to search records according to filters
-  searchDate(){
-    console.log("start-"+this.dateRange.value.start);
-    console.log("end-"+this.dateRange.value.end);
-    console.log("alerts status-"+this.dateRange.value.Alerts);
-    console.log("customer name-"+this.dateRange.value.Customers);
-    console.log("customer name-"+ this.dateRange.value.Conditions);
-    this.apiService.search(this.dateRange.value.Alerts,this.dateRange.value.Customers).subscribe(data=>{
-      console.log('data-'+data);
-      this.events = data;
-
-      if(this.dateRange.value.start !== null){
-        this.events = this.events.filter(f=>new Date(f.timestamp)>=new Date(this.dateRange.value.start) && new Date(f.timestamp) <= new Date(this.dateRange.value.end));
-        console.log('selected events -' + this.events)
-      }
-
-      if(this.dateRange.value.Conditions !== null){
-        this.events = this.events.filter(f=> f.condition_name.localeCompare(this.dateRange.value.Conditions))
-        console.log('selected events according to condition name-'+this.events);
-      }
-    })
-  }
 
   //method to get all customers in db
   getCustomers(){
@@ -121,9 +107,23 @@ export class DashboardComponent implements OnInit {
     })
   }
 
-  //method to get all events irrespective of the status
+  //method to get all events according to filters
   getAllEvents(){
-    this.apiService.searchAllEvents().subscribe(data=>{
+    this.searchCond.current_state = this.dateRange.value.Alerts;
+    this.searchCond.account_name = this.dateRange.value.Customers;
+    this.searchCond.condition_name = this.dateRange.value.Conditions;
+    if(this.dateRange.value.start != null)
+      this.searchCond.timestamp = this.dateRange.value.start.getTime();
+    if(this.dateRange.value.end != null)
+      this.searchCond.endTimestamp = this.dateRange.value.end.getTime();
+
+    console.log('Current state-'+this.searchCond.current_state);
+    console.log('Account name-'+this.searchCond.account_name);
+    console.log('Condition name-'+this.searchCond.condition_name);
+    console.log('Start date-'+this.searchCond.timestamp);
+    console.log('End date-'+this.searchCond.endTimestamp);
+    
+    this.apiService.searchAllEvents(this.searchCond).subscribe(data=>{
       this.events = data;
     })
   }

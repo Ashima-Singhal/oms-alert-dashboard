@@ -24,8 +24,8 @@ export class ApiService {
   }
 
   //method to get all events irrespective of the status
-  searchAllEvents():Observable<any>{
-      return this.http.get(this.url+"all-events");
+  searchAllEvents(searchCond:any):Observable<any>{
+      return this.http.post(this.url+"events",searchCond);
   }
 
   update(incident_id:any, patchObj:Events):Observable<any>{
