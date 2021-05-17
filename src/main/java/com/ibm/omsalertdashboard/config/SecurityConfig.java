@@ -44,7 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 			.antMatchers("/oms").permitAll()
 			.antMatchers("/token").permitAll()
 			.antMatchers("/events-list").permitAll()
-			.antMatchers("/all-events").permitAll()
+			.antMatchers("/events").permitAll()
 			.antMatchers("/update-event").permitAll()
 			.antMatchers("/get-customers").permitAll()
 			.antMatchers("/get-conditions").permitAll()

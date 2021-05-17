@@ -3,12 +3,21 @@ package com.ibm.omsalertdashboard.service;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+
+//import javax.persistence.EntityManager;
+//import javax.persistence.PersistenceContext;
+//import javax.persistence.criteria.CriteriaBuilder;
+//import javax.persistence.criteria.CriteriaQuery;
+//import javax.persistence.criteria.Predicate;
+//import javax.persistence.criteria.Root;
+//import javax.transaction.Transactional;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -45,11 +54,13 @@ public class QueryService {
 	@Autowired
 	private static final Logger LOG = LoggerFactory.getLogger(QueryService.class);
 	@Autowired
-	IncidentsRepositoryImpl incidentRepo;
+	private IncidentsRepositoryImpl incidentRepo;
 	@Autowired
-	KeyRepositoryImpl keyRepo;
+	private KeyRepositoryImpl keyRepo;
 	@Autowired
-	TimestampRepositoryImpl timeRepo;
+	private TimestampRepositoryImpl timeRepo;
+//	@PersistenceContext
+//	private EntityManager entityManager;
 	
 	public String query(Long timestamp,String accountId,String queryKey) throws IOException {
 		String jsonBody = null;
@@ -119,9 +130,9 @@ public class QueryService {
 		
 		Map<Long, Events> incidentMap = new HashMap<>();
 		List<Events> oldEventlList = incidentList.get(0).getResults().get(0).get("events");
-		//loop to put all incidents retrieved from db into hashmap with incident id as key
+		//loop to put all incidents of prod retrieved from db into hashmap with incident id as key
 		for(int i=0;i<oldEventlList.size();i++) {
-			if(!incidentMap.containsKey(oldEventlList.get(i).getIncident_id())) 
+			if(!incidentMap.containsKey(oldEventlList.get(i).getIncident_id()) && (oldEventlList.get(i).getAccount_name().endsWith("PROD") || oldEventlList.get(i).getAccount_name().endsWith("Prod"))) 
 				incidentMap.put(oldEventlList.get(i).getIncident_id(), oldEventlList.get(i));
 		}
 		
@@ -130,24 +141,25 @@ public class QueryService {
 		Set<Long> newIncidentIdSet = new HashSet<>();// to keep track of duplicate events from api
 		//updating all the events 
 		for(int i=0;i<newEventsList.size();i++) {
-			if(!newIncidentIdSet.contains(newEventsList.get(i).getIncident_id())) {
+			if(!newIncidentIdSet.contains(newEventsList.get(i).getIncident_id()) && (newEventsList.get(i).getAccount_name().endsWith("PROD") || newEventsList.get(i).getAccount_name().endsWith("Prod")) ) {
 				if(newEventsList.get(i).getCurrent_state().equalsIgnoreCase("closed") && incidentMap.containsKey(newEventsList.get(i).getIncident_id())) {
 					incidentMap.get(newEventsList.get(i).getIncident_id()).setCurrent_state("closed");
 					incidentMap.get(newEventsList.get(i).getIncident_id()).setEndTimestamp(newEventsList.get(i).getTimestamp());
+					LOG.info("ACCOUNT NAME= "+ newEventsList.get(i).getAccount_name()); 
 					LOG.info("OLD EVENT UPDATED. INCIDENT ID = "+newEventsList.get(i).getIncident_id());
 					LOG.info("START TIME = "+ incidentMap.get(newEventsList.get(i).getIncident_id()).getTimestamp()+" END TIME = "+ incidentMap.get(newEventsList.get(i).getIncident_id()).getEndTimestamp()); 
 				}
 				else {
 					incidentMap.put(newEventsList.get(i).getIncident_id(), newEventsList.get(i));
-					LOG.info("NEW EVENT ADDED.");
+					LOG.info("NEW EVENT OF ACCOUNT NAME = "+ newEventsList.get(i).getAccount_name()+" ADDED.");
 					LOG.info("INCIDENT ID = "+newEventsList.get(i).getIncident_id()); 
 					LOG.info("CURRENT STATE = "+newEventsList.get(i).getCurrent_state()); 
 				}
 				
 			}
 			
-			
-			newIncidentIdSet.add(newEventsList.get(i).getIncident_id());
+			if(newEventsList.get(i).getAccount_name().endsWith("PROD") || newEventsList.get(i).getAccount_name().endsWith("Prod"))
+				newIncidentIdSet.add(newEventsList.get(i).getIncident_id());
 			
 		}
 		
@@ -213,16 +225,95 @@ public class QueryService {
 		 return eventsList;
 	}
 	
-	//service method to get all events
-	public List<Events> getEventsList(){
+	//service method to get all events according to filter
+	public List<Events> getEventsList(String current_state,String account_name,String condition_name, Long timestamp,Long endTimestamp){
 		List<Incidents> incidentList = incidentRepo.findAll();
 		List<Events> eventsList = new ArrayList<>();
 		
 		for(int i=0;i<incidentList.size();i++) {
 			List<Events> tempList = incidentList.get(i).getResults().get(0).get("events");
-			for(Events event:tempList)
-				eventsList.add(event);
+			for(Events event:tempList) {
+				if(event.getAccount_name().endsWith("PROD") || event.getAccount_name().endsWith("Prod"))
+					eventsList.add(event);
+			}	
 		}
+		LOG.info("Size of event list-"+eventsList.size()); 
+//		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+//		CriteriaQuery<Events> criteriaQuery = criteriaBuilder.createQuery(Events.class);
+//		Root<Events> root = criteriaQuery.from(Events.class);
+//		
+//		List<Predicate> searchCriterias = new ArrayList<>();
+//		
+//		if(current_state != "" && current_state != null) {
+//			searchCriterias.add(criteriaBuilder.like(root.get("current_state"),"%"+current_state+"%"));
+//		}
+//		if(account_name != "" && account_name != null) {
+//			searchCriterias.add(criteriaBuilder.like(root.get("account_name"),"%"+account_name+"%"));
+//		}
+//		if(condition_name != "" && condition_name != null) {
+//			searchCriterias.add(criteriaBuilder.like(root.get("condition_name"),"%"+condition_name+"%"));
+//		}
+//		if(timestamp != 0 && endTimestamp != 0 && timestamp <= endTimestamp) {
+//			searchCriterias.add(criteriaBuilder.between(root.get("timestamp"), timestamp, endTimestamp));
+//		}
+//		criteriaQuery.select( root ).where( criteriaBuilder.and( searchCriterias.toArray(new Predicate[searchCriterias.size()]) ));
+//		return entityManager.createQuery(criteriaQuery).getResultList();
+		
+		//condition to filter according to current_state
+		if(current_state != "" && current_state != null) {
+			LOG.info("current state-"+current_state); 
+			List<Events> tempList = new ArrayList<>();
+			for(int i=0;i<eventsList.size();i++) {
+				if(eventsList.get(i).getCurrent_state().equalsIgnoreCase(current_state)) {
+					tempList.add(eventsList.get(i));
+				}
+			}
+			eventsList.clear();
+			eventsList = tempList;
+			LOG.info("New size of event list-"+eventsList.size());
+		}
+		
+		//condition to filter according to account name
+		if(account_name != "" && account_name != null) {
+			LOG.info("account name-"+account_name); 
+			List<Events> tempList = new ArrayList<>();
+			for(int i=0;i<eventsList.size();i++) {
+				if(eventsList.get(i).getAccount_name().equalsIgnoreCase(account_name)) {
+					tempList.add(eventsList.get(i));
+				}
+			}
+			eventsList.clear();
+			eventsList = tempList;
+			LOG.info("New size of event list-"+eventsList.size());
+		}
+		
+		//condition to filter according to condition name
+		if(condition_name != "" && condition_name != null) {
+			LOG.info("condition name-"+condition_name); 
+			List<Events> tempList = new ArrayList<>();
+			for(int i=0;i<eventsList.size();i++) {
+				if(eventsList.get(i).getCondition_name().equalsIgnoreCase(condition_name)) {
+					tempList.add(eventsList.get(i));
+				}
+			}
+			eventsList.clear();
+			eventsList = tempList;
+			LOG.info("New size of event list-"+eventsList.size());
+		}
+		
+		//condition to filter according to timestamp
+		if(timestamp != null && endTimestamp != null && timestamp <= endTimestamp) {
+			LOG.info("Start date-"+timestamp+" "+"End date-"+endTimestamp);
+			List<Events> tempList = new ArrayList<>();
+			for(int i=0;i<eventsList.size();i++) {
+				if(eventsList.get(i).getTimestamp() >= timestamp && eventsList.get(i).getTimestamp() <= endTimestamp)
+					tempList.add(eventsList.get(i));
+			}
+			eventsList.clear();
+			eventsList = tempList;
+			LOG.info("New size of event list-"+eventsList.size());
+		}
+		
 		return eventsList;
 	}
 	
@@ -265,8 +356,11 @@ public class QueryService {
 		Set<String> customerSet = new HashSet<>();
 		for(int i=0;i<incidents.size();i++) {
 			List<Events> eventList = incidents.get(i).getResults().get(0).get("events");
-			for(Events event:eventList)
-				customerSet.add(event.getAccount_name());
+			for(Events event:eventList) {
+				if(event.getAccount_name().endsWith("PROD") || event.getAccount_name().endsWith("Prod"))
+					customerSet.add(event.getAccount_name());
+			}
+				
 		}
 		return customerSet.toArray();
 	}

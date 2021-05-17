@@ -29,6 +29,7 @@ import com.ibm.omsalertdashboard.model.CoC_IKSEvents;
 import com.ibm.omsalertdashboard.model.CoC_Prod;
 import com.ibm.omsalertdashboard.model.CoC_ProdEvents;
 import com.ibm.omsalertdashboard.model.Events;
+import com.ibm.omsalertdashboard.model.EventsSearchRequest;
 import com.ibm.omsalertdashboard.model.Incidents;
 import com.ibm.omsalertdashboard.model.JwtResponse;
 import com.ibm.omsalertdashboard.model.Master;
@@ -79,9 +80,11 @@ public class OmsController {
 		return ResponseEntity.ok(queryService.getEventsList(status, account_name)); 
 	}
 	
-	@GetMapping("/all-events")
-	public ResponseEntity<List<Events>> getEvents(){
-		return ResponseEntity.ok(queryService.getEventsList());
+	@PostMapping("/events")
+	public ResponseEntity<List<Events>> getEvents(@RequestBody EventsSearchRequest eventSearchReq){
+		System.out.println("API hit-"+eventSearchReq.getCurrent_state());
+		List<Events> eventList = queryService.getEventsList(eventSearchReq.getCurrent_state(), eventSearchReq.getAccount_name(), eventSearchReq.getCondition_name(), eventSearchReq.getTimestamp(), eventSearchReq.getEndTimestamp());
+		return ResponseEntity.ok(eventList);
 	}
 	
 	@PatchMapping("/update-event")

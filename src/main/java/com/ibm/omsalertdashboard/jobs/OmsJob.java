@@ -41,7 +41,7 @@ public class OmsJob implements Job{
 		LOG.info("Executing Oms Job!!!"); 
 		insertMaster();
 		insertCocIks();
-		insertCocProd();
+		//insertCocProd();
 	}
 
 	
@@ -102,8 +102,8 @@ public class OmsJob implements Job{
 			queryService.updateTimestamp("coc_prod", newTimestamp); 
 			Incidents incidents = queryService.jsonToObject(json);
 			
-			queryService.update(incidents, "coc_prod");   
-			//incidentRepo.updateJsonList(incidents, "coc_prod",false);  
+			//queryService.update(incidents, "coc_prod");   
+			incidentRepo.updateJsonList(incidents, "coc_prod",false);  
 		} catch (IOException e) {
 		
 			LOG.error(e.getMessage(), e);

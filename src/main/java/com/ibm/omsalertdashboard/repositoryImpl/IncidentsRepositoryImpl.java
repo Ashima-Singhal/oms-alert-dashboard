@@ -206,21 +206,23 @@ public class IncidentsRepositoryImpl implements IncidentsRepository{
 	@Override
 	public void updateJsonList(Incidents incidents, String name,boolean flag) {
 		// do this here only if inserting data for the first time
-		//if events are duplicate insert only latest event
 		if(!flag) {
 			List<Events> events = incidents.getResults().get(0).get("events");
-			Map<Long,Events> eventMap = new HashMap<>();//to keep track of duplicate events sent by api
+			//Map<Long,Events> eventMap = new HashMap<>();//to keep track of duplicate events sent by api
 			for(Events event:events) {
-				if(!eventMap.containsKey(event.getIncident_id())) {
-					eventMap.put(event.getIncident_id(), event);
-					if(eventMap.get(event.getIncident_id()).getCurrent_state().equalsIgnoreCase("closed"))
-						eventMap.get(event.getIncident_id()).setEndTimestamp(event.getTimestamp()); 
-				}
+//				if(!eventMap.containsKey(event.getIncident_id())) {
+//					eventMap.put(event.getIncident_id(), event);
+//					if(eventMap.get(event.getIncident_id()).getCurrent_state().equalsIgnoreCase("closed"))
+//						eventMap.get(event.getIncident_id()).setEndTimestamp(event.getTimestamp()); 
+//				}
+				
+				if(event.getCurrent_state().equalsIgnoreCase("closed")) 
+					event.setEndTimestamp(event.getTimestamp()); //if event is closed end timestamp = timestamp
 			}
-			events.clear();
-			for(Long key:eventMap.keySet()) {
-				events.add(eventMap.get(key)); 
-			}
+//			events.clear();
+//			for(Long key:eventMap.keySet()) {
+//				events.add(eventMap.get(key)); 
+//			}
 			incidents.getResults().get(0).put("events", events);
 		}
 		
