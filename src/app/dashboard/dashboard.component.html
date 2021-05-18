@@ -1,82 +1,102 @@
 <app-navbar></app-navbar>
 <section class="header">
 <!-- starting of form-->
-  <form [formGroup]="dateRange" style="margin-top: 13px;margin-left: 8px;">
-    <!-- starting of alerts form group-->
-    <div class="row">
-    <div class="form-group col-sm-2">
-       
+<form [formGroup]="dateRange" style="margin-top: 13px;margin-left: 8px;">
+  <!-- starting of alerts form group-->
+  <div class="row">
+  <div class="form-group col-sm-2">
      
-     
-       <select formControlName="Alerts" class="form-control ">
-         <option selected hidden value="invalid">Select Alert Status</option>
-         <option *ngFor="let alerts of alerts_type">{{alerts}}</option>>
-       </select>
-       <div *ngIf="f.Alerts.touched && f.Alerts.invalid" class="alert alert-danger">
-       </div>
+   
+   
+     <select formControlName="Alerts" class="form-control ">
+       <option selected hidden value="invalid">Select Alert Status</option>
+       <option *ngFor="let alerts of alerts_type">{{alerts}}</option>>
+     </select>
+     <div *ngIf="f.Alerts.touched && f.Alerts.invalid" class="alert alert-danger">
      </div>
+   </div>
 
-     <!-- starting of customers form group-->
-     <div class="form-group col-sm-2">
-      
-     
-       <select formControlName="Customers" class="form-control">
-         <option selected hidden value="invalid">Select Customer</option>   
-         <option *ngFor="let customer of customers">{{customer}}</option>
-       </select>
-       <div *ngIf="f.Customers.touched && f.Customers.invalid" class="alert alert-danger">
+   <!-- starting of customers form group-->
+   <div class="form-group col-sm-2">
+    
+   
+     <select formControlName="Customers" class="form-control">
+       <option selected hidden value="invalid">Select Customer</option>   
+       <option *ngFor="let customer of customers">{{customer}}</option>
+     </select>
+     <div *ngIf="f.Customers.touched && f.Customers.invalid" class="alert alert-danger">
 
-       </div>
      </div>
+   </div>
 
-     <!-- starting of condtions form group-->
-     <div class="form-group col-sm-2">
-      
-     
-      <select formControlName="Conditions" class="form-control">
-        <option selected hidden value="invalid">Select Condition</option>   
-        <option *ngFor="let condtion of conditions">{{condtion}}</option>
-      </select>
-      <div *ngIf="f.Conditions.touched && f.Conditions.invalid" class="alert alert-danger">
+   
+   <!-- starting of condtions form group-
+   <div class="form-group col-sm-2">
+    
+   
+    <select formControlName="Conditions" class="form-control">
+      <option selected hidden value="invalid">Select Conditions</option> 
+      <option *ngFor="let condtion of conditions">{{condtion}}</option>
+    </select>
+    <div *ngIf="f.Conditions.touched && f.Conditions.invalid" class="alert alert-danger">
 
-      </div>
     </div>
-    
-    <!-- starting of calendar form group-->
-     
-    <mat-form-field appearance="legacy" class="col-sm-2" style="margin-top: -10px;">
-  
-    <mat-label>Choose Date Range</mat-label>
-  
-    <mat-date-range-input [rangePicker]="picker" >
-      <input matStartDate formControlName="start" >
-      <input matEndDate formControlName="end" >
-    </mat-date-range-input>
-  
-    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-  
-    <mat-date-range-picker #picker></mat-date-range-picker>
-  
-  </mat-form-field>
-  <!-- <div class="col-sm-3"></div> -->
-  <div class="col-sm-1">
-    <button class="btn btn-dark" (click)="getAllEvents()">Search</button>
-    
   </div>
-  <div class="col-sm-1">
-    <button type="reset" class="btn btn-danger" (click)="reset()">Reset</button>
-  </div>
-</div>
- 
-  </form>
-  <!-- ending of form-->
   
-  </section>
+----->
 
-<table class="table table-striped table-responsive" id ="excel-table">
+  <input [value]="search1" style="height: 35px;width: 300px;"
+  ngxTypeahead
+  [taList]="conditions"
+  (taSelected)="selectedStatic($event)">
+  
+  <!-- starting of calendar form group-->
+   
+  <mat-form-field appearance="legacy" class="col-sm-2" style="margin-top: -10px;">
+
+  <mat-label>Choose Date Range</mat-label>
+
+  <mat-date-range-input [rangePicker]="picker" >
+    <input matStartDate formControlName="start" >
+    <input matEndDate formControlName="end" >
+  </mat-date-range-input>
+
+  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+
+  <mat-date-range-picker #picker></mat-date-range-picker>
+
+</mat-form-field>
+<!-- <div class="col-sm-3"></div> -->
+<div class="col-sm-1">
+  <button class="btn btn-dark" (click)="getAllEvents()">Search</button>
+  
+</div>
+<div class="col-sm-1">
+  <button type="reset" class="btn btn-danger" (click)="reset()">Reset</button>
+</div>
+</div>
+
+</form>
+<!-- ending of form-->
+
+</section>
+<br>
+
+
+
+<!--filter search-->
+<div class="col-md-4">
+  <b>Custom Search</b>
+</div>
+<div class="form-group col-md-4">
+  <input type="text" class="form-control"  placeholder="Enter Keyword for filter result" [(ngModel)]="searchedKeyword">
+</div>
+
+<table class="table table-striped table-responsive" id ="datatable" #datatable style="display: datatable;">
   <button class="btn btn-dark" (click)="  exportToExcel()" style="margin-left: 5px;margin-bottom: 3px;">Export to Excel</button>
     <thead>
       <tr>
+       
         <th scope="col">#</th>
         <th scope="col">Alert Id</th>
         <th scope="col">NR URL</th>
@@ -90,15 +110,16 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let e of events | paginate: { itemsPerPage: 5, currentPage: page } ;index as i ">
+      <tr *ngFor="let e of events | filter:searchedKeyword  | paginate: { itemsPerPage: 10, currentPage: page } ;index as i ">
+        
         <th scope="row">{{ i + 1 }}</th>
         <td>{{e.incident_id}}</td>
-        <td><a href= "{{e.incident_url}}"> {{e.incident_url}}</a></td>
-        <td>{{e.timestamp | date:'HH:mm:ss dd-MM-yyyy'}}</td>
+        <td><a href= "{{e.incident_url}}"  a target="_blank" > Alert_Link</a></td>
+        <td>{{e.timestamp | date:'medium'}}</td>
         <td *ngIf="e.endTimestamp === 0">{{e.endTimestamp}}</td>
-        <td *ngIf="e.endTimestamp !== 0">{{e.endTimestamp | date:'HH:mm:ss dd-MM-yyyy'}}</td>
-        <td>{{e.details}}</td>
-        <td *ngIf="e.incident_id === editRowId"><input [(ngModel)]="e.slack_url" [ngModelOptions]="{standalone: true}"/></td>
+        <td *ngIf="e.endTimestamp !== 0">{{e.endTimestamp | date:'medium'}}</td>
+       <td>{{e.details}}</td>
+        <td *ngIf="e.incident_id === editRowId"><input [(ngModel)]="e.slack_url"   style="height: 35px;width: 300px;" [ngModelOptions]="{standalone: true}"/></td>
         <td *ngIf="e.incident_id !== editRowId" (click)="edit(e.incident_id)"><a href="{{e.slack_url}}">{{e.slack_url}}</a></td>
         <td>{{e.account_name}}</td>
         <td>{{e.current_state}}</td>
@@ -109,3 +130,9 @@
   
 
   <pagination-controls (pageChange)="page = $event" class="text-center my-pagination"></pagination-controls>
+
+  <br>
+  <div class="highcart_div" #highcart_div style="height: 200px; width: 100%;"></div>
+  
+  <div id="container" #container style="height: 200px; width: 100%;"></div>
+ 

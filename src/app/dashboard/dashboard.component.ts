@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, VERSION} from '@angular/core';
 import { FormControl, FormGroup, Validators} from '@angular/forms';
 
 import { ApiService } from '../api.service';
@@ -6,6 +6,16 @@ import { Events } from '../events';
 import { Pipe, PipeTransform, Injectable} from '@angular/core';
 import * as XLSX from 'xlsx';
 import * as fs from 'file-saver';
+import * as  Highcharts from 'highcharts';
+import Exporting from 'highcharts/modules/exporting';
+// Initialize exporting module.
+Exporting(Highcharts);
+import Data from 'highcharts/modules/data';
+// Initialize Data module.
+Data(Highcharts);
+import ExportData from 'highcharts/modules/export-data';
+// Initialize ExportData module.
+ExportData(Highcharts);
 
 declare var _: any; // lodash, not strictly typed
 
@@ -29,6 +39,10 @@ declare var _: any; // lodash, not strictly typed
 })
 export class DashboardComponent implements OnInit {
 
+  name = `Angular! v${VERSION.full}`;
+  @ViewChild("container", { read: ElementRef }) container: ElementRef;
+  @ViewChild("datatable", { read: ElementRef }) datatable: ElementRef;
+
   constructor(private apiService : ApiService) { }
   events:any = [];
   totalLength:any;
@@ -40,6 +54,9 @@ export class DashboardComponent implements OnInit {
   alerts_type: any = ['open','closed'];
   customers:any =[];
   conditions:any= [];
+  searchedKeyword: string;
+  SelectedConditions: string;
+  
   searchCond={
     current_state:'',
     account_name:'',
@@ -122,14 +139,67 @@ export class DashboardComponent implements OnInit {
     console.log('Condition name-'+this.searchCond.condition_name);
     console.log('Start date-'+this.searchCond.timestamp);
     console.log('End date-'+this.searchCond.endTimestamp);
-    
+
     this.apiService.searchAllEvents(this.searchCond).subscribe(data=>{
       this.events = data;
+      this.selectedStatic(this.searchCond.condition_name)
+
+      console.log(this.datatable.nativeElement);
+      console.log(this.container.nativeElement);
+  
+        Highcharts.chart(this.container.nativeElement, {
+          data: {
+            table: document.getElementById('datatable'),
+            switchRowsAndColumns: true, // use rows as points
+            startColumn: 0, 
+            endColumn: 1
+    
+          },
+       
+          chart: {
+            type: 'column'
+          },
+          title: {
+            text: this.dateRange.value.Customers
+          },
+  
+          subtitle: {
+            text: this.dateRange.value.Conditions
+         },
+  
+          yAxis: {
+            allowDecimals: false,
+             //categories: ['this.dateRange.value.Conditions'],
+            title: {
+              text: 'ALERT ID'
+            }
+           
+          },
+  
+          xAxis: {
+            allowDecimals: false,
+            title: {
+              text: 'COUNT'
+            }
+           
+          },
+         
+          tooltip: {
+            formatter: function () {
+              return '<b>' + this.series.name + '</b><br/>' +
+                this.point.y + ' ' + this.point.name;
+            }
+          }
+  
+         
+        })
     })
+    
+
   }
   exportToExcel()
   {
-    let element = document.getElementById('excel-table')
+    let element = document.getElementById('datatable')
     const ws: XLSX.WorkSheet = XLSX.utils.table_to_sheet(element);
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb,ws,'Sheet1');
@@ -151,4 +221,15 @@ export class DashboardComponent implements OnInit {
     this.ngOnInit();
     //this.dateRange.value.Conditions = '';
   }
+
+  public search1 = '';
+
+  selectedStatic(result) {
+
+    this.search1 = result;
+    this.events = this.events.filter(f=> f.condition_name.match(result));
+    
+  
+  }
+
 }

@@ -16,8 +16,9 @@ import { AppComponent } from './app.component';
 import { DashboardComponent, UniquePipe } from './dashboard/dashboard.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { LoginComponent } from './login/login.component';
-
-
+import { NgxTypeaheadModule } from 'ngx-typeahead';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { Ng2SearchPipeModule } from 'ng2-search-filter';
 
 @NgModule({
   declarations: [
@@ -31,10 +32,13 @@ import { LoginComponent } from './login/login.component';
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
+    NgxMatSelectSearchModule,
     NgbModule,
     NgxPaginationModule,
     FormsModule,
+    NgxTypeaheadModule,
     ReactiveFormsModule,
+    Ng2SearchPipeModule ,
     MatDatepickerModule,
     MatNativeDateModule,
     MatFormFieldModule,
