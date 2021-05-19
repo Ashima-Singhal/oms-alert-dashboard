@@ -41,7 +41,7 @@ public class OmsJob implements Job{
 		LOG.info("Executing Oms Job!!!"); 
 		insertMaster();
 		insertCocIks();
-		//insertCocProd();
+		insertCocProd();
 	}
 
 	

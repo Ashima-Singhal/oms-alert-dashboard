@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -24,11 +26,15 @@ import com.ibm.omsalertdashboard.model.Events;
 import com.ibm.omsalertdashboard.model.Incidents;
 import com.ibm.omsalertdashboard.model.Master;
 import com.ibm.omsalertdashboard.repository.IncidentsRepository;
+import com.ibm.omsalertdashboard.service.QueryService;
 
 public class IncidentsRepositoryImpl implements IncidentsRepository{
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
+	
+	@Autowired
+	private static final Logger LOG = LoggerFactory.getLogger(IncidentsRepositoryImpl.class);
 	
 	@Override
 	public <S extends Incidents> List<S> saveAll(Iterable<S> entities) {
@@ -243,6 +249,61 @@ public class IncidentsRepositoryImpl implements IncidentsRepository{
 		query.addCriteria(Criteria.where("name").is(name));
 		
 		Update update = new Update();
+		update.set("result", incidents.getResults());
+		update.set("performanceStats", incidents.getPerformanceStats());
+		update.set("metadata", incidents.getMetadata());
+		
+		mongoTemplate.upsert(query, update, Incidents.class);
+	}
+
+	@Override
+	//generic code for pre prod and prod events
+	//first insert all open events in map
+	//check if closed event has corresponding open event then update
+	//otherwise simply insert in map
+	public void populate(Incidents incidents, String name) {
+		List<Events> eventList = incidents.getResults().get(0).get("events");
+		Map<Long, Events> eventMap = new HashMap<>();
+		
+		//insert open events in the map
+		for(Events event: eventList) {
+			if(event.getCurrent_state().equalsIgnoreCase("open")) {
+				LOG.info("Open event = "+event.getIncident_id()); 
+				eventMap.put(event.getIncident_id(), event);
+			}
+		}
+		Set<Long> eventSet = new HashSet<>();//to keep track of duplicate events
+		//updating closed events
+		for(Events event:eventList) {
+			if(event.getCurrent_state().equalsIgnoreCase("closed") && eventMap.containsKey(event.getIncident_id()) && !eventSet.contains(event.getIncident_id())) {  
+				Events e = eventMap.get(event.getIncident_id());
+				e.setCurrent_state(event.getCurrent_state());
+				e.setEndTimestamp(event.getTimestamp());
+				eventMap.put(event.getIncident_id(), e);
+				//eventMap.get(event.getIncident_id()).setCurrent_state(event.getCurrent_state()); //update current state
+				//eventMap.get(event.getIncident_id()).setEndTimestamp(event.getTimestamp()); //update end time
+				LOG.info("Event "+event.getIncident_id()+" updated.");
+				LOG.info("Start time = "+eventMap.get(event.getIncident_id()).getTimestamp()+" End time = "+eventMap.get(event.getIncident_id()).getEndTimestamp()); 
+			}
+			else if(event.getCurrent_state().equalsIgnoreCase("closed") && !eventSet.contains(event.getIncident_id())) {
+				eventMap.put(event.getIncident_id(), event);
+				eventMap.get(event.getIncident_id()).setEndTimestamp(event.getTimestamp()); 
+				LOG.info("Event "+event.getIncident_id()+" added");
+			}
+			eventSet.add(event.getIncident_id());//adding event which has been processed
+		}
+		eventList.clear();
+		for(Long key:eventMap.keySet()) {
+			eventList.add(eventMap.get(key));
+		}
+		incidents.getResults().get(0).put("events", eventList);
+		
+		//insert incidents in db
+		Query query = new Query();
+		query.addCriteria(Criteria.where("name").is(name));
+		
+		Update update = new Update();
+		update.set("name", name);
 		update.set("result", incidents.getResults());
 		update.set("performanceStats", incidents.getPerformanceStats());
 		update.set("metadata", incidents.getMetadata());

@@ -86,6 +86,30 @@ public class QueryService {
 		return jsonBody;
 	}
 	
+	public String initialQuery(String accountId,String queryKey) throws IOException {
+		String jsonBody = null;
+		final String query = "SELECT * from OmsApplicationAlerts since last month";
+		if(queryKey == null) return jsonBody;
+		
+		final String url = "https://insights-api.newrelic.com/v1/accounts/" + accountId + "/query?nrql="
+				+ URLEncoder.encode(query, "UTF-8");
+
+		final OkHttpClient client = new OkHttpClient.Builder().connectTimeout(5, TimeUnit.SECONDS)
+				.writeTimeout(5, TimeUnit.SECONDS).readTimeout(10, TimeUnit.SECONDS).build();
+		final Request request = new Request.Builder().header("X-Query-Key", queryKey).url(url).get().build();
+		final Response response = client.newCall(request).execute();
+		
+		if (response.isSuccessful()) {
+			jsonBody = response.body().string();
+
+		} else {
+
+			throw new IOException("Request failed with code " + response.code() + " body: " + response.body().string());
+		}
+
+		return jsonBody;
+	}
+	
 	public boolean getEvents(String jsonBody,String name) {
 		JsonParser parser = new JsonParser();
 		JsonArray array = parser.parse(jsonBody).getAsJsonObject().get("results").getAsJsonArray().get(0).getAsJsonObject().get("events").getAsJsonArray();
@@ -171,7 +195,7 @@ public class QueryService {
 		}
 		
 		incidents.getResults().get(0).put("events", upadatedList);
-		incidentRepo.updateJsonList(incidents, name, true);
+		incidentRepo.updateJsonList(incidents, name);
 		LOG.info("JSON DATA SUCCESSFULLY INSERTED FOR "+name+" ACCOUNT");  
 	}
 	
@@ -238,26 +262,6 @@ public class QueryService {
 			}	
 		}
 		LOG.info("Size of event list-"+eventsList.size()); 
-//		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-//		CriteriaQuery<Events> criteriaQuery = criteriaBuilder.createQuery(Events.class);
-//		Root<Events> root = criteriaQuery.from(Events.class);
-//		
-//		List<Predicate> searchCriterias = new ArrayList<>();
-//		
-//		if(current_state != "" && current_state != null) {
-//			searchCriterias.add(criteriaBuilder.like(root.get("current_state"),"%"+current_state+"%"));
-//		}
-//		if(account_name != "" && account_name != null) {
-//			searchCriterias.add(criteriaBuilder.like(root.get("account_name"),"%"+account_name+"%"));
-//		}
-//		if(condition_name != "" && condition_name != null) {
-//			searchCriterias.add(criteriaBuilder.like(root.get("condition_name"),"%"+condition_name+"%"));
-//		}
-//		if(timestamp != 0 && endTimestamp != 0 && timestamp <= endTimestamp) {
-//			searchCriterias.add(criteriaBuilder.between(root.get("timestamp"), timestamp, endTimestamp));
-//		}
-//		criteriaQuery.select( root ).where( criteriaBuilder.and( searchCriterias.toArray(new Predicate[searchCriterias.size()]) ));
-//		return entityManager.createQuery(criteriaQuery).getResultList();
 		
 		//condition to filter according to current_state
 		if(current_state != "" && current_state != null) {
@@ -377,5 +381,38 @@ public class QueryService {
 				
 		}
 		return condtionSet.toArray();
+	}
+	
+	public void populateMaster(){
+		Key key = findOneByName("master");
+		try {
+			String json = initialQuery(key.getAccount_id(), key.getQuery_key());
+			Incidents incidents = jsonToObject(json);
+			incidentRepo.populate(incidents, "master"); 
+		} catch (IOException e) {
+			LOG.info(e.getMessage()); 
+		}
+	}
+	
+	public void populateIks(){
+		Key key = findOneByName("coc_iks");
+		try {
+			String json = initialQuery(key.getAccount_id(), key.getQuery_key());
+			Incidents incidents = jsonToObject(json);
+			incidentRepo.populate(incidents, "coc_iks"); 
+		} catch (IOException e) {
+			LOG.info(e.getMessage()); 
+		}
+	}
+	
+	public void populateProd(){
+		Key key = findOneByName("coc_prod");
+		try {
+			String json = initialQuery(key.getAccount_id(), key.getQuery_key());
+			Incidents incidents = jsonToObject(json);
+			incidentRepo.populate(incidents, "coc_prod"); 
+		} catch (IOException e) {
+			LOG.info(e.getMessage()); 
+		}
 	}
 }

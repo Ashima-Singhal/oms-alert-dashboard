@@ -33,9 +33,9 @@ public class OmsApplication {
 	
 	public void runOmsJob() {
 		final TimerInfo info = new TimerInfo();
-		info.setTotalFireCount(1);
-		//info.setRunForever(true); 
-		info.setRepeatIntervalMs(2000); 
+		//info.setTotalFireCount(1);
+		info.setRunForever(true); 
+		info.setRepeatIntervalMs(3600000); 
 		info.setInitialOffsetMs(1000);
 		
 		scheduler.schedule(OmsJob.class, info); 

@@ -32,6 +32,7 @@ import com.ibm.omsalertdashboard.model.Events;
 import com.ibm.omsalertdashboard.model.EventsSearchRequest;
 import com.ibm.omsalertdashboard.model.Incidents;
 import com.ibm.omsalertdashboard.model.JwtResponse;
+import com.ibm.omsalertdashboard.model.Key;
 import com.ibm.omsalertdashboard.model.Master;
 import com.ibm.omsalertdashboard.model.MasterEvents;
 import com.ibm.omsalertdashboard.model.JwtRequest;
@@ -71,6 +72,13 @@ public class OmsController {
 	@GetMapping("/oms")
 	public void runOmsJob() {
 		service.runOmsJob();
+	}
+	
+	@GetMapping("/populate")
+	public void initialSetup() {
+		queryService.populateMaster();
+		queryService.populateIks();
+		queryService.populateProd();
 	}
 	
 	@GetMapping("/events-list") 
