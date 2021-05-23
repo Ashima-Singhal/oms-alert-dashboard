@@ -56,7 +56,12 @@ export class DashboardComponent implements OnInit {
   conditions:any= [];
   searchedKeyword: string;
   SelectedConditions: string;
-  
+  selected: string;
+  data: any;
+  settings = {};
+  abc:any =[];
+  itemList = [];
+
   searchCond={
     current_state:'',
     account_name:'',
@@ -78,7 +83,15 @@ export class DashboardComponent implements OnInit {
       this.getAllEvents();      
       this.getCustomers();
       this.getConditions();
+      this.settings = {
+        text: "Select Customers",
+        selectAllText: 'Select All',
+        unSelectAllText: 'UnSelect All',
+        classes: "myclass custom-class",
+        textField: 'customers'
+    };
   }
+ 
 
   update(event:Events){
       console.log('event selected-'+event.incident_id)
@@ -142,6 +155,7 @@ export class DashboardComponent implements OnInit {
 
     this.apiService.searchAllEvents(this.searchCond).subscribe(data=>{
       this.events = data;
+
       this.selectedStatic(this.searchCond.condition_name)
 
       console.log(this.datatable.nativeElement);
@@ -151,27 +165,26 @@ export class DashboardComponent implements OnInit {
           data: {
             table: document.getElementById('datatable'),
             switchRowsAndColumns: true, // use rows as points
-            startColumn: 0, 
-            endColumn: 1
-    
+            //startColumn: 0, 
+            //endColumn: 1
+          
           },
-       
           chart: {
-            type: 'column'
+            type: 'pie'
           },
           title: {
             text: this.dateRange.value.Customers
           },
   
           subtitle: {
-            text: this.dateRange.value.Conditions
+            text: this.searchCond.condition_name
          },
   
           yAxis: {
             allowDecimals: false,
              //categories: ['this.dateRange.value.Conditions'],
             title: {
-              text: 'ALERT ID'
+              text: 'Count'
             }
            
           },
@@ -179,7 +192,7 @@ export class DashboardComponent implements OnInit {
           xAxis: {
             allowDecimals: false,
             title: {
-              text: 'COUNT'
+              text: 'Alert Type'
             }
            
           },
@@ -231,5 +244,11 @@ export class DashboardComponent implements OnInit {
     
   
   }
+  onSelectAll(items: any) {
+    console.log(items);
+}
+onDeSelectAll(items: any) {
+    console.log(items);
+}
 
 }
