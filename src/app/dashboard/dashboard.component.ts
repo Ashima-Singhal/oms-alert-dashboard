@@ -51,7 +51,7 @@ export class DashboardComponent implements OnInit {
   editRowId:any = '';
   patchObj = new Events();
   public  model = 1;
-  alerts_type: any = ['open','closed'];
+  alerts_type: any = ['all','open','closed'];
   customers:any =[];
   conditions:any= [];
   searchedKeyword: string;
@@ -127,6 +127,8 @@ export class DashboardComponent implements OnInit {
   //method to get all events according to filters
   getAllEvents(){
     this.searchCond.current_state = this.dateRange.value.Alerts;
+    if(this.searchCond.current_state == 'all')
+      this.searchCond.current_state = '';
     this.searchCond.account_name = this.dateRange.value.Customers;
     this.searchCond.condition_name = this.dateRange.value.Conditions;
     if(this.dateRange.value.start != null)

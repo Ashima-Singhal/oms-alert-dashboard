@@ -11,6 +11,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DashboardComponent, UniquePipe } from './dashboard/dashboard.component';
@@ -46,7 +47,8 @@ import { Ng2SearchPipeModule } from 'ng2-search-filter';
     MatInputModule,
     MatButtonModule
   ],
-  providers: [],
+  providers: []
+  ,
   bootstrap: [AppComponent]
 })
 export class AppModule { }

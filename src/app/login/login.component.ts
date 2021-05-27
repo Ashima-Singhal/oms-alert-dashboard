@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { JwksValidationHandler, OAuthService } from 'angular-oauth2-oidc';
 import { ApiService } from '../api.service';
+// import { authCodeFlowConfig } from '../sso.config';
 
 @Component({
   selector: 'app-login',
@@ -9,13 +11,21 @@ import { ApiService } from '../api.service';
 })
 export class LoginComponent implements OnInit {
 
-  constructor(private service:ApiService, private router:Router) { }
+  constructor(private service:ApiService, private router:Router) {
+   // this.configureSingleSignOn();
+   }
   credentials={
     username:'',
     password:''
   }
   ngOnInit(): void {
   }
+
+  // configureSingleSignOn(){
+  //   this.oauth.configure(authCodeFlowConfig);
+  //   this.oauth.tokenValidationHandler = new JwksValidationHandler();
+  //   this.oauth.loadDiscoveryDocumentAndTryLogin();
+  // }
 
   onSubmit(){
     
@@ -32,6 +42,12 @@ export class LoginComponent implements OnInit {
     }
     else
       console.log('fields are empty');
+
+   // this.oauth.initImplicitFlow();
   }
+
+  // logout(){
+  //   this.oauth.logOut();
+  // }
 
 }
