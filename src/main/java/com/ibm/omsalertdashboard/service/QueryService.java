@@ -280,7 +280,8 @@ public class QueryService {
 		}
 		
 		//condition to filter according to account name
-		if(account_name != null || account_name.size() != 0) {
+		if(account_name != null && account_name.size() != 0) {
+			LOG.info("Filtering according to account name"); 
 			Set<String> accountNameSet = new HashSet<>(account_name);
 			List<Events> tempList = new ArrayList<>();
 			for(int i=0;i<eventsList.size();i++) {

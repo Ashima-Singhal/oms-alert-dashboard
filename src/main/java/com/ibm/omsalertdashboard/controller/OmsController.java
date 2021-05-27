@@ -90,7 +90,7 @@ public class OmsController {
 	
 	@PostMapping("/events")
 	public ResponseEntity<List<Events>> getEvents(@RequestBody EventsSearchRequest eventSearchReq){
-		System.out.println("API hit-"+eventSearchReq.getCurrent_state());
+		System.out.println("API hit-"+eventSearchReq.getAccount_name().size());
 		List<Events> eventList = queryService.getEventsList(eventSearchReq.getCurrent_state(), eventSearchReq.getAccount_name(), eventSearchReq.getCondition_name(), eventSearchReq.getTimestamp(), eventSearchReq.getEndTimestamp());
 		return ResponseEntity.ok(eventList);
 	}

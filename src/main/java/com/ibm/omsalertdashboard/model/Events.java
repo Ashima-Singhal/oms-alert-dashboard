@@ -2,7 +2,10 @@ package com.ibm.omsalertdashboard.model;
 
 import org.springframework.stereotype.Repository;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Repository
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Events {
 
 	//common to all 3 accounts
