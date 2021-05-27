@@ -174,6 +174,8 @@ public class QueryService {
 					LOG.info("START TIME = "+ incidentMap.get(newEventsList.get(i).getIncident_id()).getTimestamp()+" END TIME = "+ incidentMap.get(newEventsList.get(i).getIncident_id()).getEndTimestamp()); 
 				}
 				else {
+					if(newEventsList.get(i).getCurrent_state().equalsIgnoreCase("closed"))
+						newEventsList.get(i).setEndTimestamp(newEventsList.get(i).getTimestamp()); 
 					incidentMap.put(newEventsList.get(i).getIncident_id(), newEventsList.get(i));
 					LOG.info("NEW EVENT OF ACCOUNT NAME = "+ newEventsList.get(i).getAccount_name()+" ADDED.");
 					LOG.info("INCIDENT ID = "+newEventsList.get(i).getIncident_id()); 
@@ -318,7 +320,11 @@ public class QueryService {
 			LOG.info("New size of event list-"+eventsList.size());
 		}
 		
-		return eventsList;
+		Set<Events> eventSet = new HashSet<>();
+		for(Events event: eventsList)
+			eventSet.add(event);
+		
+		return new ArrayList<>(eventSet);
 	}
 	
 	public Events updateEvent(long incident_id,String slack_url) {
