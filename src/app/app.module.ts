@@ -20,6 +20,12 @@ import { LoginComponent } from './login/login.component';
 import { NgxTypeaheadModule } from 'ngx-typeahead';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown';
+
+
+
+
 
 @NgModule({
   declarations: [
@@ -33,6 +39,8 @@ import { Ng2SearchPipeModule } from 'ng2-search-filter';
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
+    NgSelectModule,
+    AngularMultiSelectModule,
     NgxMatSelectSearchModule,
     NgbModule,
     NgxPaginationModule,

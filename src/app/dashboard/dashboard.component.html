@@ -16,14 +16,23 @@
      </div>
    </div>
 
+   <div class="form-group col-sm-2" >
+    <angular2-multiselect formControlName="Customers" class="form-control"
+                       [data]="customers" 
+                       [(ngModel)]='customers'
+                       [settings]="settings" 
+                       (onSelectAll)="onSelectAll($event)" 
+                       (onDeSelectAll)="onDeSelectAll($event)">
+   </angular2-multiselect>
+ 
+ </div>
+
    <!-- starting of customers form group-->
-   <div class="form-group col-sm-2">
-    
-   
-     <select formControlName="Customers" class="form-control">
-       <option selected hidden value="invalid">Select Customer</option>   
-       <option *ngFor="let customer of customers">{{customer}}</option>
-     </select>
+   <div class="form-group col-sm-2" >
+    <select formControlName="Customers" class="form-control" >
+     <option selected hidden value="invalid">Select Customer</option>  
+     <option *ngFor="let customer of customers">{{customer}}</option>
+     </select> 
      <div *ngIf="f.Customers.touched && f.Customers.invalid" class="alert alert-danger">
 
      </div>
@@ -43,9 +52,10 @@
     </div>
   </div>
   
------>
+--->
 
   <input [value]="search1" style="height: 35px;width: 300px;"
+  placeholder="Search for Alert Type"
   ngxTypeahead
   [taList]="conditions"
   (taSelected)="selectedStatic($event)">
@@ -96,14 +106,15 @@
   <button class="btn btn-dark" (click)="  exportToExcel()" style="margin-left: 5px;margin-bottom: 3px;">Export to Excel</button>
     <thead>
       <tr>
-       
+        <th scope="col">Alert Type</th>
         <th scope="col">#</th>
+      
         <th scope="col">Alert Id</th>
         <th scope="col">NR URL</th>
         <th scope="col">Triggered Time</th>
         <th scope="col">End time</th>
-        <th scope="col">Alert Type</th>
-        <th scope="col">Slack URL</th>
+      
+        <th scope="col">Comments</th>
         <th scope="col">Customer Name</th>
         <th scope="col">Status</th>
         <th scope="col">Action</th>
@@ -111,14 +122,15 @@
     </thead>
     <tbody>
       <tr *ngFor="let e of events | filter:searchedKeyword  | paginate: { itemsPerPage: 10, currentPage: page } ;index as i ">
-        
+        <td>{{e.details}}</td>
         <th scope="row">{{ i + 1 }}</th>
+       
         <td>{{e.incident_id}}</td>
         <td><a href= "{{e.incident_url}}"  a target="_blank" > Alert_Link</a></td>
         <td>{{e.timestamp | date:'medium'}}</td>
         <td *ngIf="e.endTimestamp === 0">{{e.endTimestamp}}</td>
         <td *ngIf="e.endTimestamp !== 0">{{e.endTimestamp | date:'medium'}}</td>
-       <td>{{e.details}}</td>
+       
         <td *ngIf="e.incident_id === editRowId"><input [(ngModel)]="e.slack_url"   style="height: 35px;width: 300px;" [ngModelOptions]="{standalone: true}"/></td>
         <td *ngIf="e.incident_id !== editRowId" (click)="edit(e.incident_id)"><a href="{{e.slack_url}}">{{e.slack_url}}</a></td>
         <td>{{e.account_name}}</td>
@@ -132,7 +144,6 @@
   <pagination-controls (pageChange)="page = $event" class="text-center my-pagination"></pagination-controls>
 
   <br>
-  <div class="highcart_div" #highcart_div style="height: 200px; width: 100%;"></div>
-  
+
   <div id="container" #container style="height: 200px; width: 100%;"></div>
- 
+  <br>
