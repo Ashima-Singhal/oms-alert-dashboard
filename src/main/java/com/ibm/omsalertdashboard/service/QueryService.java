@@ -252,7 +252,7 @@ public class QueryService {
 	}
 	
 	//service method to get all events according to filter
-	public List<Events> getEventsList(String current_state,String account_name,String condition_name, Long timestamp,Long endTimestamp){
+	public List<Events> getEventsList(String current_state,List<String> account_name,String condition_name, Long timestamp,Long endTimestamp){
 		List<Incidents> incidentList = incidentRepo.findAll();
 		List<Events> eventsList = new ArrayList<>();
 		
@@ -280,17 +280,16 @@ public class QueryService {
 		}
 		
 		//condition to filter according to account name
-		if(account_name != "" && account_name != null) {
-			LOG.info("account name-"+account_name); 
+		if(account_name != null || account_name.size() != 0) {
+			Set<String> accountNameSet = new HashSet<>(account_name);
 			List<Events> tempList = new ArrayList<>();
 			for(int i=0;i<eventsList.size();i++) {
-				if(eventsList.get(i).getAccount_name().equalsIgnoreCase(account_name)) {
+				if(accountNameSet.contains(eventsList.get(i).getAccount_name()))
 					tempList.add(eventsList.get(i));
-				}
 			}
 			eventsList.clear();
 			eventsList = tempList;
-			LOG.info("New size of event list-"+eventsList.size());
+			LOG.info("New size of event list-"+eventsList.size()); 
 		}
 		
 		//condition to filter according to condition name

@@ -1,19 +1,21 @@
 package com.ibm.omsalertdashboard.model;
 
+import java.util.List;
+
 public class EventsSearchRequest {
 
 	private String current_state;
-	private String account_name;
+	private List<String> account_name;
 	private String condition_name;
 	private Long timestamp;
 	private Long endTimestamp;
 	
-	public EventsSearchRequest(String current_state, String account_name, String condition_name, Long timestamp,
+	public EventsSearchRequest(String current_state, List<String> account_name, String condition_name, Long timestamp,
 			Long endTimestamp) {
 		super();
 		this.current_state = current_state;
 		this.account_name = account_name;
-		this.condition_name = condition_name;
+		this.condition_name = condition_name; 
 		this.timestamp = timestamp;
 		this.endTimestamp = endTimestamp;
 	}
@@ -26,11 +28,11 @@ public class EventsSearchRequest {
 		this.current_state = current_state;
 	}
 
-	public String getAccount_name() {
+	public List<String> getAccount_name() {
 		return account_name;
 	}
 
-	public void setAccount_name(String account_name) {
+	public void setAccount_name(List<String> account_name) { 
 		this.account_name = account_name;
 	}
 
