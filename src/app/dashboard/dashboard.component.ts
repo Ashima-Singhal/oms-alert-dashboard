@@ -64,7 +64,7 @@ export class DashboardComponent implements OnInit {
 
   searchCond={
     current_state:'',
-    account_name:'',
+    account_name: [],
     condition_name:'',
     timestamp:Number,
     endTimestamp:Number
@@ -75,7 +75,7 @@ export class DashboardComponent implements OnInit {
     start: new FormControl(),
     end: new FormControl(),
     Alerts: new FormControl('', Validators.required),
-    Customers: new FormControl('', Validators.required),
+    Customers: new FormControl([], Validators.required),
     Conditions: new FormControl('', Validators.required)
   });
 
@@ -127,6 +127,7 @@ export class DashboardComponent implements OnInit {
   getCustomers(){
     this.apiService.getCustomers().subscribe(data=>{
       this.customers = data;
+      //console.log(this.customers);
     })
   }
 
