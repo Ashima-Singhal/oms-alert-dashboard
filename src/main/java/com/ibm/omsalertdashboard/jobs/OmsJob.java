@@ -1,6 +1,8 @@
 package com.ibm.omsalertdashboard.jobs;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -34,16 +36,34 @@ public class OmsJob implements Job{
 	private static final Logger LOG = LoggerFactory.getLogger(OmsJob.class);
 	@Autowired
 	private IncidentsRepositoryImpl incidentRepo;
+	private static LocalDateTime currentDate;
 	
+	
+
+
+	public LocalDateTime getCurrentDate() {
+		return currentDate;
+	}
+
+
+
+	public void setCurrentDate(LocalDateTime currentDate) {
+		this.currentDate = currentDate; 
+	}
+
+
+
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 		
 		LOG.info("Executing Oms Job!!!"); 
+		setCurrentDate(LocalDateTime.now()); 
 		insertMaster();
 		insertCocIks();
 		insertCocProd();
 	}
 
+	
 	
 	public void insertMaster() {
 		try {

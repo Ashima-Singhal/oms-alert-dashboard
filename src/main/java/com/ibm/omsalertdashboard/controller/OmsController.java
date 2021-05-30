@@ -1,6 +1,8 @@
 package com.ibm.omsalertdashboard.controller;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -140,5 +142,10 @@ public class OmsController {
 		if(response == null)
 			return ResponseEntity.status(500).body(new RegisterResponse(user.getUserName(), user.getRole(), "User already exits"));  
 		return ResponseEntity.ok(new RegisterResponse(user.getUserName(), user.getRole(), "User successfully created")); 
+	}
+	
+	@GetMapping("/getDate")
+	public ResponseEntity<LocalDateTime> getDate() { 
+		return ResponseEntity.ok(queryService.getDate());
 	}
 }

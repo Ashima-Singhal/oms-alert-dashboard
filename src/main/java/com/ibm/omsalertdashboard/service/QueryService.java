@@ -2,6 +2,7 @@ package com.ibm.omsalertdashboard.service;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -33,6 +34,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.ibm.omsalertdashboard.jobs.OmsJob;
 import com.ibm.omsalertdashboard.model.CoC_IKS;
 import com.ibm.omsalertdashboard.model.CoC_Prod;
 import com.ibm.omsalertdashboard.model.Events;
@@ -64,6 +66,8 @@ public class QueryService {
 	private TimestampRepositoryImpl timeRepo;
 	@Autowired
 	private JwtRequestRepositoryImpl jwtRepo;
+	@Autowired
+	private OmsJob omsJob;
 //	@PersistenceContext
 //	private EntityManager entityManager;
 	
@@ -429,5 +433,9 @@ public class QueryService {
 	
 	public JwtRequest save(JwtRequest user) {
 		return jwtRepo.save(user);
+	}
+	
+	public LocalDateTime getDate() {
+		return omsJob.getCurrentDate();
 	}
 }
