@@ -61,7 +61,7 @@ export class DashboardComponent implements OnInit {
   settings = {};
   abc:any =[];
   itemList = [];
-
+  dateTime:any;
   searchCond={
     current_state:'',
     account_name: [],
@@ -252,6 +252,13 @@ export class DashboardComponent implements OnInit {
 }
 onDeSelectAll(items: any) {
     console.log(items);
+}
+
+getDateTime(){
+  console.log('in method');
+  this.apiService.getDateTime().subscribe(data=>{
+    this.dateTime = data;
+  })
 }
 
 }
