@@ -35,6 +35,7 @@ import com.ibm.omsalertdashboard.model.JwtResponse;
 import com.ibm.omsalertdashboard.model.Key;
 import com.ibm.omsalertdashboard.model.Master;
 import com.ibm.omsalertdashboard.model.MasterEvents;
+import com.ibm.omsalertdashboard.model.RegisterResponse;
 import com.ibm.omsalertdashboard.model.JwtRequest;
 import com.ibm.omsalertdashboard.repository.MasterRepository;
 import com.ibm.omsalertdashboard.service.CustomUserDetailsService;
@@ -130,5 +131,14 @@ public class OmsController {
 		System.out.println("generated token - "+ token); 
 		
 		return ResponseEntity.ok(new JwtResponse(token,user.getUserName()));
+	}
+	
+	
+	@PostMapping("/register")
+	public ResponseEntity<RegisterResponse> register(@RequestBody JwtRequest user) {
+		JwtRequest response = queryService.save(user);
+		if(response == null)
+			return ResponseEntity.status(500).body(new RegisterResponse(user.getUserName(), user.getRole(), "User already exits"));  
+		return ResponseEntity.ok(new RegisterResponse(user.getUserName(), user.getRole(), "User successfully created")); 
 	}
 }

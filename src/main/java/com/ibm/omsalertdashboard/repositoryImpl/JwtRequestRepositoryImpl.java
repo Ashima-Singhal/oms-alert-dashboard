@@ -69,9 +69,10 @@ public class JwtRequestRepositoryImpl implements JwtRequestRepository{
 	}
 
 	@Override
-	public <S extends JwtRequest> S save(S entity) {
+	public JwtRequest save(JwtRequest user) {
 		// TODO Auto-generated method stub
-		return null;
+		if(findByUsername(user.getUserName()) != null) return null;
+		return mongoTemplate.save(user); 
 	}
 
 	@Override

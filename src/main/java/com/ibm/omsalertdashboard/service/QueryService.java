@@ -37,12 +37,15 @@ import com.ibm.omsalertdashboard.model.CoC_IKS;
 import com.ibm.omsalertdashboard.model.CoC_Prod;
 import com.ibm.omsalertdashboard.model.Events;
 import com.ibm.omsalertdashboard.model.Incidents;
+import com.ibm.omsalertdashboard.model.JwtRequest;
 import com.ibm.omsalertdashboard.model.Key;
 import com.ibm.omsalertdashboard.model.Master;
 import com.ibm.omsalertdashboard.model.TimestampUtil;
 import com.ibm.omsalertdashboard.repository.IncidentsRepository;
+import com.ibm.omsalertdashboard.repository.JwtRequestRepository;
 import com.ibm.omsalertdashboard.repository.TimestampRepository;
 import com.ibm.omsalertdashboard.repositoryImpl.IncidentsRepositoryImpl;
+import com.ibm.omsalertdashboard.repositoryImpl.JwtRequestRepositoryImpl;
 import com.ibm.omsalertdashboard.repositoryImpl.KeyRepositoryImpl;
 import com.ibm.omsalertdashboard.repositoryImpl.TimestampRepositoryImpl;
 
@@ -59,6 +62,8 @@ public class QueryService {
 	private KeyRepositoryImpl keyRepo;
 	@Autowired
 	private TimestampRepositoryImpl timeRepo;
+	@Autowired
+	private JwtRequestRepositoryImpl jwtRepo;
 //	@PersistenceContext
 //	private EntityManager entityManager;
 	
@@ -420,5 +425,9 @@ public class QueryService {
 		} catch (IOException e) {
 			LOG.info(e.getMessage()); 
 		}
+	}
+	
+	public JwtRequest save(JwtRequest user) {
+		return jwtRepo.save(user);
 	}
 }
