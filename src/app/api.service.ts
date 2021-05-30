@@ -76,4 +76,8 @@ export class ApiService {
   getUsername(){
     return localStorage.getItem('username');
   }
+
+  register(registraitionDetails:any){
+    return this.http.post(this.url+"register",registraitionDetails);
+  }
 }

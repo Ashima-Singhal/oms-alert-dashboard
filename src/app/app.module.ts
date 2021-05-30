@@ -10,7 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-
+import { MatRadioModule } from '@angular/material/radio';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -22,6 +22,7 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown';
+import { RegisterComponent } from './register/register.component';
 
 
 
@@ -33,7 +34,8 @@ import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown';
     DashboardComponent,
     UniquePipe,
     NavbarComponent,
-    LoginComponent
+    LoginComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,
@@ -53,7 +55,8 @@ import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown';
     MatFormFieldModule,
     BrowserAnimationsModule,
     MatInputModule,
-    MatButtonModule
+    MatButtonModule,
+    MatRadioModule
   ],
   providers: []
   ,

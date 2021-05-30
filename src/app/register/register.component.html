@@ -1,0 +1,39 @@
+<div class="bootstrap-wrapper">
+    <div class="container ">
+        <div class="row mt">
+            <div class="col-md-6 offset-md-3">
+                <div class="container text-center">
+                    <img class="img-fluid" style="width: 100px;margin-top: 15px;" src="assets/login.png" alt="">
+                </div>
+                <h1 class="text-center">Register Here!!!</h1>
+
+                <form (ngSubmit)="onSubmit()" class="text-center">
+                    <mat-form-field class="full-width" >
+                        <mat-label>Username</mat-label>
+                        <input type="text" [(ngModel)]="registraitionDetails.username" [ngModelOptions]="{standalone: true}"required matInput sta />
+                    </mat-form-field>
+                    <br>
+                    <mat-form-field class="full-width" >
+                        <mat-label>Password</mat-label>
+                        <input type="password" [(ngModel)]="registraitionDetails.password" [ngModelOptions]="{standalone: true}" required matInput />
+                    </mat-form-field>
+                    <br>
+                    <mat-form-field class="full-width" >
+                        <mat-label>Confirm Password</mat-label>
+                        <input type="password" required matInput />
+                    </mat-form-field>
+                    <br>
+                    <mat-radio-group [(ngModel)]="registraitionDetails.role" [ngModelOptions]="{standalone: true}">
+                        <mat-radio-button value="Engineer">Engineer</mat-radio-button>
+                        <mat-radio-button value="Manager">Manager</mat-radio-button>
+                      </mat-radio-group> 
+                    <div class="container text-center">
+                        <button class="btn btn-dark" type="submit" mat-raised-button>Register</button>
+                    </div>
+                    
+                    
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
