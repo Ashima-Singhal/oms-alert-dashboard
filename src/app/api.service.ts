@@ -46,6 +46,7 @@ export class ApiService {
   login(response){
     localStorage.setItem('token',response.token);
     localStorage.setItem('username',response.username);
+    localStorage.setItem('role',response.role);
     return true;
   }
 
@@ -80,6 +81,11 @@ export class ApiService {
   //service method to register user
   register(registraitionDetails:any){
     return this.http.post(this.url+"register",registraitionDetails);
+  }
+
+  //service method to get role
+  getRole(){
+    return localStorage.getItem('role');
   }
 
   //service method to get date and time

@@ -16,13 +16,17 @@
                         <mat-label>Password</mat-label>
                         <input [(ngModel)]="credentials.password" [ngModelOptions]="{standalone: true}" type="password" required matInput />
                     </mat-form-field>
+                    <mat-radio-group [(ngModel)]="credentials.role" [ngModelOptions]="{standalone: true}">
+                        <mat-radio-button value="Engineer">Engineer</mat-radio-button>
+                        <mat-radio-button value="Manager">Manager</mat-radio-button>
+                      </mat-radio-group> 
                     <div class="container text-center">
                         <button class="btn btn-dark" type="submit" mat-raised-button>Login</button>
                     </div>
                     <br>
-                    <p class="container text-center">Not a member?
+                    <!-- <p class="container text-center">Not a member?
                         <a href="/register" >Register</a>
-                      </p>
+                      </p> -->
                 </form>
             </div>
         </div>

@@ -11,10 +11,14 @@ export class NavbarComponent implements OnInit {
   public isCollapsed = true;
   public isLoggedIn = false;
   public username = '';
+  public isManager = false;
+
   constructor(private service: ApiService,private router:Router){}
   ngOnInit(): void {
     this.isLoggedIn = this.service.isLoggedIn();
     this.username = this.service.getUsername();
+    if(this.service.getRole() == 'Manager')
+      this.isManager = true;
   }
 
   logoutUser(){

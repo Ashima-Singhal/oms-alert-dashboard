@@ -16,6 +16,7 @@
           <a class="nav-link" routerLink="/login" *ngIf="!isLoggedIn">Login</a>
           <a class="nav-link" *ngIf="isLoggedIn">{{username}}</a>
           <a class="nav-link " *ngIf="isLoggedIn" (click)="logoutUser()">Logout</a>
+          <a class="nav-link" *ngIf="isManager" routerLink="/register">Register</a>
         </div>
         </ul>
       </div>

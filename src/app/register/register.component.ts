@@ -26,7 +26,7 @@ export class RegisterComponent implements OnInit {
 
     this.api.register(this.registraitionDetails).subscribe(data=>{
       console.log(data);
-      this.router.navigate(['login']);
+      this.router.navigate(['dashboard']);
     },err=>{
       console.log(err);
     })
