@@ -2,6 +2,7 @@ package com.ibm.omsalertdashboard.service;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -256,8 +257,13 @@ public class QueryService {
 					 eventsList.add(event);
 			 }
 		 }
-		 
-		 return eventsList;
+		 Long timestamp = new Timestamp(System.currentTimeMillis()).getTime();
+		 Set<Events> eventsSet = new HashSet<>();
+		 for(Events event:eventsList) {
+			 if(Math.abs(event.getTimestamp()-timestamp) >= 1800000)
+				 eventsSet.add(event);
+		 }
+		 return new ArrayList<>(eventsSet);
 	}
 	
 	//service method to get all events according to filter

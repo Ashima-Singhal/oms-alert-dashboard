@@ -131,8 +131,8 @@ public class OmsController {
 		UserDetails userDetails = this.customUserDetailsService.loadUserByUsername(user.getUserName());
 		String token = this.jwtUtil.generateToken(userDetails);
 		System.out.println("generated token - "+ token); 
-		
-		return ResponseEntity.ok(new JwtResponse(token,user.getUserName()));
+		System.out.println("role-"+user.getRole()); 
+		return ResponseEntity.ok(new JwtResponse(token,user.getUserName(),user.getRole()));
 	}
 	
 	

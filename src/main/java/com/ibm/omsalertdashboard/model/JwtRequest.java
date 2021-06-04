@@ -10,11 +10,11 @@ public class JwtRequest {
 	private String role;
 	
 	
-	public JwtRequest(String username, String password) {
+	public JwtRequest(String username, String password,String role) {
 		super();
 		this.username = username;
 		this.password = password;
-		//this.role = role;
+		this.role = role;
 	}
 	public String getUserName() { 
 		return username;
@@ -36,7 +36,8 @@ public class JwtRequest {
 	}
 	@Override
 	public String toString() {
-		return "JwtRequest [username=" + username + ", password=" + password + "]";
+		return "JwtRequest [username=" + username + ", password=" + password + ", role=" + role + "]";
 	}
+	
 	
 }
