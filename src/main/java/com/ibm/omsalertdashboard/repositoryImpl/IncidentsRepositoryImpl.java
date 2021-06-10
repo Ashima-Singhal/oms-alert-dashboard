@@ -20,11 +20,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 
-import com.ibm.omsalertdashboard.model.CoC_IKS;
-import com.ibm.omsalertdashboard.model.CoC_Prod;
+
 import com.ibm.omsalertdashboard.model.Events;
 import com.ibm.omsalertdashboard.model.Incidents;
-import com.ibm.omsalertdashboard.model.Master;
 import com.ibm.omsalertdashboard.repository.IncidentsRepository;
 import com.ibm.omsalertdashboard.service.QueryService;
 
@@ -162,42 +160,7 @@ public class IncidentsRepositoryImpl implements IncidentsRepository{
 		return false;
 	}
 
-	@Override
-	public void updateMasterIncidents(Master master, String name) {
-		// TODO Auto-generated method stub
-		Query query = new Query();
-		query.addCriteria(Criteria.where("name").is(name));
-		
-		Update update = new Update();
-		update.set("incidents", master);
-		
-		mongoTemplate.upsert(query, update, Incidents.class);
-	}
-
-	@Override
-	public void updateCocProdIncidents(CoC_Prod prod, String name) {
-		// TODO Auto-generated method stub
-		Query query = new Query();
-		query.addCriteria(Criteria.where("name").is(name));
-		
-		Update update = new Update();
-		update.set("incidents", prod);
-		
-		mongoTemplate.upsert(query, update, Incidents.class);
-	}
-
-	@Override
-	public void updateCocIksIncidents(CoC_IKS iks, String name) {
-		// TODO Auto-generated method stub
-		Query query = new Query();
-		query.addCriteria(Criteria.where("name").is(name));
-		
-		Update update = new Update();
-		update.set("incidents", iks);
-		
-		mongoTemplate.upsert(query, update, Incidents.class);
-	}
-
+	
 	@Override
 	public List<Incidents> findByName(String name) {
 		// TODO Auto-generated method stub

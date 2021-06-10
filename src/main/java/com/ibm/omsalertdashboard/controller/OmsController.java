@@ -20,28 +20,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-//import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ibm.omsalertdashboard.application.OmsApplication;
-import com.ibm.omsalertdashboard.model.CoC_IKS;
-import com.ibm.omsalertdashboard.model.CoC_IKSEvents;
-import com.ibm.omsalertdashboard.model.CoC_Prod;
-import com.ibm.omsalertdashboard.model.CoC_ProdEvents;
 import com.ibm.omsalertdashboard.model.Events;
 import com.ibm.omsalertdashboard.model.EventsSearchRequest;
 import com.ibm.omsalertdashboard.model.Incidents;
 import com.ibm.omsalertdashboard.model.JwtResponse;
 import com.ibm.omsalertdashboard.model.Key;
-import com.ibm.omsalertdashboard.model.Master;
-import com.ibm.omsalertdashboard.model.MasterEvents;
 import com.ibm.omsalertdashboard.model.RegisterResponse;
 import com.ibm.omsalertdashboard.model.JwtRequest;
-import com.ibm.omsalertdashboard.repository.MasterRepository;
 import com.ibm.omsalertdashboard.service.CustomUserDetailsService;
-import com.ibm.omsalertdashboard.service.OmsService;
 import com.ibm.omsalertdashboard.service.QueryService;
 import com.ibm.omsalertdashboard.util.JwtUtil;
 
@@ -49,9 +40,9 @@ import com.ibm.omsalertdashboard.util.JwtUtil;
 @CrossOrigin
 public class OmsController {
 
-	private final OmsApplication service;
-	private final MasterRepository masterRepository;
-	private final OmsService omsService;
+	@Autowired
+	private OmsApplication service;
+	
 	@Autowired
 	private QueryService queryService;
 	
@@ -64,18 +55,12 @@ public class OmsController {
 	@Autowired
 	private AuthenticationManager authenticationManager;
 	
-	@Autowired
-	public OmsController(final OmsApplication service,final MasterRepository masterRepository,final OmsService omsService) {
-		super();
-		this.service = service;
-		this.masterRepository = masterRepository;
-		this.omsService = omsService;
-	}
 	
 	@GetMapping("/oms")
 	public void runOmsJob() {
 		service.runOmsJob();
 	}
+	
 	
 	@GetMapping("/populate")
 	public void initialSetup() {
@@ -119,6 +104,9 @@ public class OmsController {
 		System.out.println("User data received-"+user); 
 		try {
 			this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUserName(), user.getPassword()));
+			//role = queryService.findUser(user.getUserName()).getRole();
+//			if(role.equalsIgnoreCase(user.getRole()))
+//				throw new Exception("Bad Credentials!!!"); 
 		}catch (UsernameNotFoundException e) {
 			e.printStackTrace();
 			throw new Exception("User not found!!!"); 
@@ -132,7 +120,7 @@ public class OmsController {
 		String token = this.jwtUtil.generateToken(userDetails);
 		System.out.println("generated token - "+ token); 
 		System.out.println("role-"+user.getRole()); 
-		return ResponseEntity.ok(new JwtResponse(token,user.getUserName(),user.getRole()));
+		return ResponseEntity.ok(new JwtResponse(token, user.getUserName(),queryService.findUser(user.getUserName()).getRole()));
 	}
 	
 	
@@ -145,7 +133,8 @@ public class OmsController {
 	}
 	
 	@GetMapping("/getDate")
-	public ResponseEntity<LocalDateTime> getDate() { 
+	public ResponseEntity<LocalDateTime> getDate() {
+		queryService.sync();
 		return ResponseEntity.ok(queryService.getDate());
 	}
 }

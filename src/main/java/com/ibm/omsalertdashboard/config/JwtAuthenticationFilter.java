@@ -21,6 +21,7 @@ import com.ibm.omsalertdashboard.service.CustomUserDetailsService;
 import com.ibm.omsalertdashboard.util.JwtUtil;
 
 @Component
+//class to create JwtAuthentication configuration
 public class JwtAuthenticationFilter extends OncePerRequestFilter{
 
 	@Autowired

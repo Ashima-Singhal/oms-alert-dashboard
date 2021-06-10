@@ -36,13 +36,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.ibm.omsalertdashboard.jobs.OmsJob;
-import com.ibm.omsalertdashboard.model.CoC_IKS;
-import com.ibm.omsalertdashboard.model.CoC_Prod;
 import com.ibm.omsalertdashboard.model.Events;
 import com.ibm.omsalertdashboard.model.Incidents;
 import com.ibm.omsalertdashboard.model.JwtRequest;
 import com.ibm.omsalertdashboard.model.Key;
-import com.ibm.omsalertdashboard.model.Master;
 import com.ibm.omsalertdashboard.model.TimestampUtil;
 import com.ibm.omsalertdashboard.repository.IncidentsRepository;
 import com.ibm.omsalertdashboard.repository.JwtRequestRepository;
@@ -443,5 +440,22 @@ public class QueryService {
 	
 	public LocalDateTime getDate() {
 		return omsJob.getCurrentDate();
+	}
+	
+	public JwtRequest findUser(String username) {
+		return jwtRepo.findByUsername(username);
+	}
+	
+	public void sync() {
+		omsJob.execute();
+	}
+	
+	//method returns the time for which an event is open
+	public String duration(Long milliseconds) {
+		Long day = TimeUnit.MILLISECONDS.toDays(milliseconds);
+		Long hours = TimeUnit.MILLISECONDS.toHours(milliseconds)-TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS.toDays(milliseconds));
+		Long minutes = TimeUnit.MILLISECONDS.toMinutes(milliseconds)-TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(milliseconds));
+		
+		return day+" days "+hours+" hours "+minutes+" minutes ";
 	}
 }

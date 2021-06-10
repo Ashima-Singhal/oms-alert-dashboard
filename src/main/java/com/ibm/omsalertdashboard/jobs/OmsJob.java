@@ -1,6 +1,7 @@
 package com.ibm.omsalertdashboard.jobs;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -23,19 +24,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.ibm.omsalertdashboard.model.CoC_IKS;
-import com.ibm.omsalertdashboard.model.CoC_Prod;
 import com.ibm.omsalertdashboard.model.Events;
 import com.ibm.omsalertdashboard.model.Incidents;
 import com.ibm.omsalertdashboard.model.Key;
-import com.ibm.omsalertdashboard.model.Master;
 import com.ibm.omsalertdashboard.model.TimestampUtil;
-import com.ibm.omsalertdashboard.repository.Coc_IKSRepository;
-import com.ibm.omsalertdashboard.repository.Coc_ProdRepository;
-import com.ibm.omsalertdashboard.repository.IncidentsRepository;
-import com.ibm.omsalertdashboard.repository.KeyRepository;
-import com.ibm.omsalertdashboard.repository.MasterRepository;
-import com.ibm.omsalertdashboard.repository.TimestampRepository;
 import com.ibm.omsalertdashboard.repositoryImpl.IncidentsRepositoryImpl;
 import com.ibm.omsalertdashboard.service.QueryService;
 
@@ -76,19 +68,30 @@ public class OmsJob implements Job{
 		sendMail();
 	}
 
-	
+	public void execute() {
+		insertMaster();
+		insertCocIks();
+		insertCocProd();
+	}
 	
 	private void sendMail() {
 		List<Events> events = queryService.getEventsList("open");
 		if(events == null || events.size() == 0) return;
 		LOG.info("Preparing to send mail..."); 
 		StringBuilder message = new StringBuilder("There are some open alerts. Please look into this");
-		message = message.append("\n");
+		//message = message.append("\n");
+		message.append("<html><head></head><title></title>");
+		message.append("<body style='font-size:12px;font-family:Trebuchet MS;'>");
+		message.append("<table width='1000px' text-align='center' border='5' cellpadding='0' cellspacing='0' style='border-top:5px solid white;'");
+		message.append("<tr><td>Alert ID</td><td>Customer Name</td><td>New Relic URL</td><td>Duration</td></tr>");
 		for(Events event:events) {
-			message = message.append(event.getIncident_url());
+			Long duration = Math.abs(new Timestamp(System.currentTimeMillis()).getTime()-event.getTimestamp());
+//			message = message.append(event.getIncident_id()+"\t"+event.getAccount_name()+"\t"+event.getIncident_url()+"\t"+duration);
+//			message.append("\n");
+			message.append("<tr><td>"+event.getIncident_id()+"</td><td>"+event.getAccount_name()+"</td><td>"+event.getIncident_url()+"</td><td>"+queryService.duration(duration)+"</td></tr>"); 
 		}
 		String subject = "Open Alerts!!!";
-		String to = "Shivani.Sah@ibm.com, pankaj_singh@in.ibm.com";
+		String to = "Shivani.Sah@ibm.com";
 		String from = "test.ibm.01062021@gmail.com";
 		
 		sendMail(message.toString(),subject,to,from);
@@ -138,7 +141,7 @@ public class OmsJob implements Job{
 			//set subject
 			mimeMsg.setSubject(subject);
 			//set text
-			mimeMsg.setText(message); 
+			mimeMsg.setContent(message, "text/html");  
 			
 			//send message
 			Transport.send(mimeMsg); 
