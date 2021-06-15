@@ -5,7 +5,9 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.mail.Authenticator;
 import javax.mail.Message;
@@ -75,21 +77,70 @@ public class OmsJob implements Job{
 	}
 	
 	private void sendMail() {
-		List<Events> events = queryService.getEventsList("open");
+		Map<String, Set<Events>> events = queryService.getEventsList("open"); 
 		if(events == null || events.size() == 0) return;
 		LOG.info("Preparing to send mail..."); 
 		StringBuilder message = new StringBuilder("There are some open alerts. Please look into this");
 		//message = message.append("\n");
 		message.append("<html><head></head><title></title>");
+//		message.append("<body style='font-size:12px;font-family:Trebuchet MS;'>");
+//		message.append("<table width='1000px' text-align='center' border='5' cellpadding='0' cellspacing='0' style='border-top:5px solid white;'");
+//		message.append("<tr><td>Alert ID</td><td>Customer Name</td><td>New Relic URL</td><td>Duration</td></tr>");
+//		for(Map.Entry<String,Set<Events>> mapElement: events.entrySet()) { 
+//			String key = (String) mapElement.getKey();
+//			Set<Events> value = (Set<Events>) mapElement.getValue();
+//			message.append("<h3>"+key+"</h3>");
+////			message.append("<body style='font-size:12px;font-family:Trebuchet MS;'>");
+////			message.append("<table width='1000px' text-align='center' border='5' cellpadding='0' cellspacing='0' style='border-top:5px solid white;'"); 
+////			message.append("<tr><td>Alert ID</td><td>Customer Name</td><td>New Relic URL</td><td>Duration</td></tr>");
+//			for(Events event: value) {
+//				Long duration = Math.abs(new Timestamp(System.currentTimeMillis()).getTime()-event.getTimestamp());
+//				message.append("<tr><td>"+event.getIncident_id()+"</td><td>"+event.getAccount_name()+"</td><td>"+event.getIncident_url()+"</td><td>"+queryService.duration(duration)+"</td></tr>");
+//			}
+//			
+////			message = message.append(event.getIncident_id()+"\t"+event.getAccount_name()+"\t"+event.getIncident_url()+"\t"+duration);
+////			message.append("\n");
+//			 
+//		}
+		
+		
+		Set<Events> eventSet = events.get("master");
+		if(eventSet.size() == 0) 
+			LOG.debug("no open events in master!!!"); 
 		message.append("<body style='font-size:12px;font-family:Trebuchet MS;'>");
+		message.append("<h3>master</h3>");
 		message.append("<table width='1000px' text-align='center' border='5' cellpadding='0' cellspacing='0' style='border-top:5px solid white;'");
 		message.append("<tr><td>Alert ID</td><td>Customer Name</td><td>New Relic URL</td><td>Duration</td></tr>");
-		for(Events event:events) {
+		
+		for(Events event: eventSet) {
 			Long duration = Math.abs(new Timestamp(System.currentTimeMillis()).getTime()-event.getTimestamp());
-//			message = message.append(event.getIncident_id()+"\t"+event.getAccount_name()+"\t"+event.getIncident_url()+"\t"+duration);
-//			message.append("\n");
-			message.append("<tr><td>"+event.getIncident_id()+"</td><td>"+event.getAccount_name()+"</td><td>"+event.getIncident_url()+"</td><td>"+queryService.duration(duration)+"</td></tr>"); 
+			message.append("<tr><td>"+event.getIncident_id()+"</td><td>"+event.getAccount_name()+"</td><td>"+event.getIncident_url()+"</td><td>"+queryService.duration(duration)+"</td></tr>");
 		}
+		eventSet.clear();
+		eventSet = events.get("coc_iks");
+		if(eventSet.size() == 0)	LOG.debug("No open events in coc_iks!!!"); 
+		message.append("<h3>coc_iks</h3>"); 
+		//message.append("<body style='font-size:12px;font-family:Trebuchet MS;'>");
+		message.append("<table width='1000px' text-align='center' border='5' cellpadding='0' cellspacing='0' style='border-top:5px solid white;'");
+		message.append("<tr><td>Alert ID</td><td>Customer Name</td><td>New Relic URL</td><td>Duration</td></tr>");
+		
+		for(Events event: eventSet) {
+			Long duration = Math.abs(new Timestamp(System.currentTimeMillis()).getTime()-event.getTimestamp());
+			message.append("<tr><td>"+event.getIncident_id()+"</td><td>"+event.getAccount_name()+"</td><td>"+event.getIncident_url()+"</td><td>"+queryService.duration(duration)+"</td></tr>");
+		}
+		eventSet.clear();
+		eventSet = events.get("coc_prod");
+		if(eventSet.size() == 0) LOG.debug("No open events in coc_prod!!!"); 
+		message.append("<h3>coc_prod</h3>"); 
+		//message.append("<body style='font-size:12px;font-family:Trebuchet MS;'>");
+		message.append("<table width='1000px' text-align='center' border='5' cellpadding='0' cellspacing='0' style='border-top:5px solid white;'");
+		message.append("<tr><td>Alert ID</td><td>Customer Name</td><td>New Relic URL</td><td>Duration</td></tr>");
+		
+		for(Events event: eventSet) {
+			Long duration = Math.abs(new Timestamp(System.currentTimeMillis()).getTime()-event.getTimestamp());
+			message.append("<tr><td>"+event.getIncident_id()+"</td><td>"+event.getAccount_name()+"</td><td>"+event.getIncident_url()+"</td><td>"+queryService.duration(duration)+"</td></tr>");
+		}
+		
 		String subject = "Open Alerts!!!";
 		String to = "Shivani.Sah@ibm.com";
 		String from = "test.ibm.01062021@gmail.com";

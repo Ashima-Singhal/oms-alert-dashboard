@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 //import javax.persistence.EntityManager;
@@ -224,43 +225,58 @@ public class QueryService {
 	}
 	
 	//method to get events based on current status and customer name
-	public List<Events> getEventsList(String status,String account_name){
-		 if(account_name.equalsIgnoreCase("")) return getEventsList(status);
-		
-		 List<Incidents> incidentList = incidentRepo.findAll();
-		 List<Events> eventsList = new ArrayList<>();
-		 
-		 for(int i=0;i<incidentList.size();i++) {
-			 List<Events> tempList = incidentList.get(i).getResults().get(0).get("events");
-			 for(Events event:tempList) {
-				 if(event.getCurrent_state().equalsIgnoreCase(status) && event.getAccount_name().equalsIgnoreCase(account_name)) 
-					 eventsList.add(event);
-			 }
-		 }
-		 
-		 return eventsList;
-	}
+//	public List<Events> getEventsList(String status,String account_name){
+//		 if(account_name.equalsIgnoreCase("")) return getEventsList(status);
+//		
+//		 List<Incidents> incidentList = incidentRepo.findAll();
+//		 List<Events> eventsList = new ArrayList<>();
+//		 
+//		 for(int i=0;i<incidentList.size();i++) {
+//			 List<Events> tempList = incidentList.get(i).getResults().get(0).get("events");
+//			 for(Events event:tempList) {
+//				 if(event.getCurrent_state().equalsIgnoreCase(status) && event.getAccount_name().equalsIgnoreCase(account_name)) 
+//					 eventsList.add(event);
+//			 }
+//		 }
+//		 
+//		 return eventsList;
+//	}
 	
 	//service method to get event list according to status open or closed
-	public List<Events> getEventsList(String status){
+	public Map<String, Set<Events>> getEventsList(String status){
 		
 		 List<Incidents> incidentList = incidentRepo.findAll();
 		 List<Events> eventsList = new ArrayList<>();
-		 
+		 ConcurrentHashMap<String, Set<Events>> eventMap = new ConcurrentHashMap<>();
+ 		 
 		 for(int i=0;i<incidentList.size();i++) {
 			 List<Events> tempList = incidentList.get(i).getResults().get(0).get("events");
 			 for(Events event:tempList) {
 				 if(event.getCurrent_state().equalsIgnoreCase(status)) 
 					 eventsList.add(event);
 			 }
+			 eventMap.put(incidentList.get(i).getName(), new HashSet<>(eventsList));
+			 eventsList.clear();
 		 }
 		 Long timestamp = new Timestamp(System.currentTimeMillis()).getTime();
-		 Set<Events> eventsSet = new HashSet<>();
-		 for(Events event:eventsList) {
-			 if(Math.abs(event.getTimestamp()-timestamp) >= 1800000)
-				 eventsSet.add(event);
+		// Set<Events> eventsSet = new HashSet<>();
+//		 for(Events event:eventsList) {
+//			 if(Math.abs(event.getTimestamp()-timestamp) >= 1800000)
+//				 eventsSet.add(event);
+//		 }
+		 HashMap<String, Set<Events>> returnMap = new HashMap<>();
+		 for(Map.Entry<String,Set<Events>> mapElement: eventMap.entrySet()) { 
+			 String key = (String) mapElement.getKey();
+			 Set<Events> value = (Set<Events>) mapElement.getValue();
+			 Set<Events> eventSet = new HashSet<>();
+			 for(Events event:value) {
+				 if(Math.abs(event.getTimestamp()-timestamp) >= 1800000)
+					 eventSet.add(event);
+			 }
+			 
+			 returnMap.put(key, eventSet);
 		 }
-		 return new ArrayList<>(eventsSet);
+		 return returnMap;
 	}
 	
 	//service method to get all events according to filter
