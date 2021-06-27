@@ -107,9 +107,11 @@ public class OmsJob implements Job{
 		Set<Events> eventSet = events.get("master");
 		if(eventSet.size() == 0) 
 			LOG.debug("no open events in master!!!"); 
+		//message.append("<body style='font-size:12px;font-family:Trebuchet MS;'>");
+		//message.append("<h3>master</h3>");
+		message.append("<table width='1000px' text-align='center' border='5' cellpadding='0' cellspacing='0' style='border-top:5px solid white;'");
 		message.append("<body style='font-size:12px;font-family:Trebuchet MS;'>");
 		message.append("<h3>master</h3>");
-		message.append("<table width='1000px' text-align='center' border='5' cellpadding='0' cellspacing='0' style='border-top:5px solid white;'");
 		message.append("<tr><td>Alert ID</td><td>Customer Name</td><td>New Relic URL</td><td>Duration</td></tr>");
 		
 		for(Events event: eventSet) {
@@ -119,9 +121,11 @@ public class OmsJob implements Job{
 		eventSet.clear();
 		eventSet = events.get("coc_iks");
 		if(eventSet.size() == 0)	LOG.debug("No open events in coc_iks!!!"); 
-		message.append("<h3>coc_iks</h3>"); 
+		//message.append("<h3>coc_iks</h3>"); 
 		//message.append("<body style='font-size:12px;font-family:Trebuchet MS;'>");
 		message.append("<table width='1000px' text-align='center' border='5' cellpadding='0' cellspacing='0' style='border-top:5px solid white;'");
+		message.append("<body style='font-size:12px;font-family:Trebuchet MS;'>");
+		message.append("<h3>coc_iks</h3>");
 		message.append("<tr><td>Alert ID</td><td>Customer Name</td><td>New Relic URL</td><td>Duration</td></tr>");
 		
 		for(Events event: eventSet) {
@@ -131,9 +135,11 @@ public class OmsJob implements Job{
 		eventSet.clear();
 		eventSet = events.get("coc_prod");
 		if(eventSet.size() == 0) LOG.debug("No open events in coc_prod!!!"); 
-		message.append("<h3>coc_prod</h3>"); 
+		//message.append("<h3>coc_prod</h3>"); 
 		//message.append("<body style='font-size:12px;font-family:Trebuchet MS;'>");
 		message.append("<table width='1000px' text-align='center' border='5' cellpadding='0' cellspacing='0' style='border-top:5px solid white;'");
+		message.append("<body style='font-size:12px;font-family:Trebuchet MS;'>");
+		message.append("<h3>coc_prod</h3>");
 		message.append("<tr><td>Alert ID</td><td>Customer Name</td><td>New Relic URL</td><td>Duration</td></tr>");
 		
 		for(Events event: eventSet) {
@@ -142,7 +148,7 @@ public class OmsJob implements Job{
 		}
 		
 		String subject = "Open Alerts!!!";
-		String to = "Shivani.Sah@ibm.com";
+		String to = "Ashima.Singhal@ibm.com, pankaj_singh@in.ibm.com";
 		String from = "test.ibm.01062021@gmail.com";
 		
 		sendMail(message.toString(),subject,to,from);

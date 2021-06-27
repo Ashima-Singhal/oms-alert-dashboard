@@ -40,7 +40,7 @@ public class Events {
 	private String violation_chart_url;
 	private String sev;
 	private long endTimestamp;
-	
+
 	public long getAccount_id() {
 		return account_id;
 	}

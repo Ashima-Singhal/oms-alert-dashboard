@@ -6,11 +6,11 @@ public class EventsSearchRequest {
 
 	private String current_state;
 	private List<String> account_name;
-	private String condition_name;
+	private List<String> condition_name;
 	private Long timestamp;
 	private Long endTimestamp;
 	
-	public EventsSearchRequest(String current_state, List<String> account_name, String condition_name, Long timestamp,
+	public EventsSearchRequest(String current_state, List<String> account_name, List<String> condition_name, Long timestamp,
 			Long endTimestamp) {
 		super();
 		this.current_state = current_state;
@@ -36,11 +36,11 @@ public class EventsSearchRequest {
 		this.account_name = account_name;
 	}
 
-	public String getCondition_name() {
+	public List<String> getCondition_name() {
 		return condition_name;
 	}
 
-	public void setCondition_name(String condition_name) {
+	public void setCondition_name(List<String> condition_name) {
 		this.condition_name = condition_name;
 	}
 

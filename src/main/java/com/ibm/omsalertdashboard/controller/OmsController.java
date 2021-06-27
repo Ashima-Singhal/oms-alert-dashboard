@@ -69,16 +69,17 @@ public class OmsController {
 		queryService.populateProd();
 	}
 	
-	@GetMapping("/events-list") 
-	public ResponseEntity<List<Events>> getEvents(@RequestParam("status") String status,@RequestParam("account_name") String account_name){
+
+	//@GetMapping("/events-list") 
+	//public ResponseEntity<List<Events>> getEvents(@RequestParam("status") String status,@RequestParam("account_name") String account_name){
 		//queryService.getEvents(status); 
-		if(account_name == null || account_name.length() == 0) return ResponseEntity.ok(queryService.getEventsList(status)); 
-		return ResponseEntity.ok(queryService.getEventsList(status, account_name)); 
-	}
+		//if(account_name == null || account_name.length() == 0) return ResponseEntity.ok(queryService.getEventsList(status)); 
+		//return ResponseEntity.ok(queryService.getEventsList(status, account_name)); 
+	//}
 	
 	@PostMapping("/events")
 	public ResponseEntity<List<Events>> getEvents(@RequestBody EventsSearchRequest eventSearchReq){
-		System.out.println("API hit-"+eventSearchReq.getAccount_name().size());
+		System.out.println("API hit-"+eventSearchReq.getAccount_name().size() + eventSearchReq.getCondition_name().size());
 		List<Events> eventList = queryService.getEventsList(eventSearchReq.getCurrent_state(), eventSearchReq.getAccount_name(), eventSearchReq.getCondition_name(), eventSearchReq.getTimestamp(), eventSearchReq.getEndTimestamp());
 		return ResponseEntity.ok(eventList);
 	}

@@ -280,7 +280,7 @@ public class QueryService {
 	}
 	
 	//service method to get all events according to filter
-	public List<Events> getEventsList(String current_state,List<String> account_name,String condition_name, Long timestamp,Long endTimestamp){
+	public List<Events> getEventsList(String current_state,List<String> account_name,List<String> condition_name, Long timestamp,Long endTimestamp){
 		List<Incidents> incidentList = incidentRepo.findAll();
 		List<Events> eventsList = new ArrayList<>();
 		
@@ -322,18 +322,31 @@ public class QueryService {
 		}
 		
 		//condition to filter according to condition name
-		if(condition_name != "" && condition_name != null) {
-			LOG.info("condition name-"+condition_name); 
+		if(condition_name != null && condition_name.size() != 0) {
+			LOG.info("Filtering according to condition name"); 
+			Set<String> conditionNameSet = new HashSet<>(condition_name);
 			List<Events> tempList = new ArrayList<>();
 			for(int i=0;i<eventsList.size();i++) {
-				if(eventsList.get(i).getCondition_name().equalsIgnoreCase(condition_name)) {
+				if(conditionNameSet.contains(eventsList.get(i).getCondition_name()))
 					tempList.add(eventsList.get(i));
-				}
 			}
 			eventsList.clear();
 			eventsList = tempList;
-			LOG.info("New size of event list-"+eventsList.size());
+			LOG.info("New size of event list-"+eventsList.size()); 
 		}
+		
+		//if(condition_name != "" && condition_name != null) {
+			//LOG.info("condition name-"+condition_name); 
+			//List<Events> tempList = new ArrayList<>();
+			//for(int i=0;i<eventsList.size();i++) {
+				//if(eventsList.get(i).getCondition_name().equalsIgnoreCase(condition_name)) {
+					//tempList.add(eventsList.get(i));
+				//}
+			//}
+			//eventsList.clear();
+			//eventsList = tempList;
+			//LOG.info("New size of event list-"+eventsList.size());
+		//}
 		
 		//condition to filter according to timestamp
 		if(timestamp != null && endTimestamp != null && timestamp <= endTimestamp) {
@@ -402,6 +415,21 @@ public class QueryService {
 		}
 		return customerSet.toArray();
 	}
+	
+//	public Object[] findConditionWithCount()
+	//{
+		//List<Incidents> incidents = incidentRepo.findAll();
+		//Map<String, Integer> condtionSet= new HashMap<String,Integer>();
+		//for(int i=0;i<incidents.size();i++) {
+			//List<Events> eventList = incidents.get(i).getResults().get(0).get("events");
+			//for(Events event:eventList) {
+				//condtionSet.put(event.getCondition_name(),events.getCount());
+				//LOG.info(event.getCondition_name()); 
+			//}
+				
+	//	}
+		//return condtionSet.toArray();
+	//}
 	
 	public Object[] findAllConditions() {
 		List<Incidents> incidents = incidentRepo.findAll();
