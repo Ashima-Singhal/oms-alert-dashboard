@@ -1,29 +1,28 @@
 .my-pagination /deep/ .ngx-pagination .current {
-    background: black;
-  }
+  background: black;
+}
 
 
 .table{
-  font-size: smaller;
+font-size: smaller;
 }
 .multiselect {
-  width: 200px;
+width: 200px;
 }
 
 .selectBox {
-  position: relative;
+position: relative;
 }
 
 .selectBox select {
-  width: 100%;
-  font-weight: bold;
+width: 100%;
+font-weight: bold;
 }
 
 .overSelect {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
+position: absolute;
+left: 0;
+right: 0;
+top: 0;
+bottom: 0;
 }
-

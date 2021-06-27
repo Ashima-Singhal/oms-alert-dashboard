@@ -6,16 +6,8 @@ import { Events } from '../events';
 import { Pipe, PipeTransform, Injectable} from '@angular/core';
 import * as XLSX from 'xlsx';
 import * as fs from 'file-saver';
-import * as  Highcharts from 'highcharts';
-import Exporting from 'highcharts/modules/exporting';
-// Initialize exporting module.
-Exporting(Highcharts);
-import Data from 'highcharts/modules/data';
-// Initialize Data module.
-Data(Highcharts);
-import ExportData from 'highcharts/modules/export-data';
-// Initialize ExportData module.
-ExportData(Highcharts);
+import { IDropdownSettings } from 'ng-multiselect-dropdown';
+
 
 declare var _: any; // lodash, not strictly typed
 
@@ -39,9 +31,6 @@ declare var _: any; // lodash, not strictly typed
 })
 export class DashboardComponent implements OnInit {
 
-  name = `Angular! v${VERSION.full}`;
-  @ViewChild("container", { read: ElementRef }) container: ElementRef;
-  @ViewChild("datatable", { read: ElementRef }) datatable: ElementRef;
 
   constructor(private apiService : ApiService) { }
   events:any = [];
@@ -62,6 +51,8 @@ export class DashboardComponent implements OnInit {
   abc:any =[];
   itemList = [];
   dateTime:any;
+  dropdownSettings : IDropdownSettings;
+  dropdownSet : IDropdownSettings;
   searchCond={
     current_state:'',
     account_name: [],
@@ -76,20 +67,33 @@ export class DashboardComponent implements OnInit {
     end: new FormControl(),
     Alerts: new FormControl('', Validators.required),
     Customers: new FormControl([], Validators.required),
-    Conditions: new FormControl('', Validators.required)
+    Conditions: new FormControl([], Validators.required)
   });
 
   ngOnInit(): void {
       this.getAllEvents();      
       this.getCustomers();
       this.getConditions();
-      this.settings = {
-        text: "Select Customers",
+      this.dropdownSettings = {
+        singleSelection: false,
+        idField: 'item_id',
+        textField: 'item_text',
         selectAllText: 'Select All',
         unSelectAllText: 'UnSelect All',
-        classes: "myclass custom-class",
-        textField: 'customers'
-    };
+        itemsShowLimit: 3,
+        allowSearchFilter: true
+      };
+
+      this.dropdownSet={
+        singleSelection: true,
+        idField: 'item_id',
+        textField: 'item_text',
+        selectAllText: 'Select All',
+        unSelectAllText: 'UnSelect All',
+        itemsShowLimit: 3,
+        allowSearchFilter: true
+      };
+
   }
  
 
@@ -143,6 +147,9 @@ export class DashboardComponent implements OnInit {
     this.searchCond.current_state = this.dateRange.value.Alerts;
     if(this.searchCond.current_state == 'all')
       this.searchCond.current_state = '';
+    else if(this.searchCond.current_state == '')
+    this.searchCond.current_state = 'open';
+    
     this.searchCond.account_name = this.dateRange.value.Customers;
     this.searchCond.condition_name = this.dateRange.value.Conditions;
     if(this.dateRange.value.start != null)
@@ -159,56 +166,8 @@ export class DashboardComponent implements OnInit {
     this.apiService.searchAllEvents(this.searchCond).subscribe(data=>{
       this.events = data;
 
-      this.selectedStatic(this.searchCond.condition_name)
+     this.selectedStatic(this.searchCond.condition_name)
 
-      console.log(this.datatable.nativeElement);
-      console.log(this.container.nativeElement);
-  
-        Highcharts.chart(this.container.nativeElement, {
-          data: {
-            table: document.getElementById('datatable'),
-            switchRowsAndColumns: true, // use rows as points
-            //startColumn: 0, 
-            //endColumn: 1
-          
-          },
-          chart: {
-            type: 'pie'
-          },
-          title: {
-            text: this.dateRange.value.Customers
-          },
-  
-          subtitle: {
-            text: this.searchCond.condition_name
-         },
-  
-          yAxis: {
-            allowDecimals: false,
-             //categories: ['this.dateRange.value.Conditions'],
-            title: {
-              text: 'Count'
-            }
-           
-          },
-  
-          xAxis: {
-            allowDecimals: false,
-            title: {
-              text: 'Alert Type'
-            }
-           
-          },
-         
-          tooltip: {
-            formatter: function () {
-              return '<b>' + this.series.name + '</b><br/>' +
-                this.point.y + ' ' + this.point.name;
-            }
-          }
-  
-         
-        })
     })
     
 
@@ -247,18 +206,23 @@ export class DashboardComponent implements OnInit {
     
   
   }
-  onSelectAll(items: any) {
-    console.log(items);
-}
-onDeSelectAll(items: any) {
-    console.log(items);
-}
+
 
 getDateTime(){
   console.log('in method');
   this.apiService.getDateTime().subscribe(data=>{
     this.dateTime = data;
   })
+}
+onItemSelect(item: any) {
+  console.log(item);
+}
+onSelectAll(items: any) {
+  console.log(items);
+}
+
+onDeSelectAll(items: any) {
+  console.log(items);
 }
 
 }

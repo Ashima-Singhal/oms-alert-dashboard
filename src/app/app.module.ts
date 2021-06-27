@@ -23,10 +23,9 @@ import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown';
 import { RegisterComponent } from './register/register.component';
-
-
-
-
+import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
+import { AnalyticsComponent } from './analytics/analytics.component';
+import { ChartsModule } from 'ng2-charts';
 
 @NgModule({
   declarations: [
@@ -35,7 +34,8 @@ import { RegisterComponent } from './register/register.component';
     UniquePipe,
     NavbarComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    AnalyticsComponent
   ],
   imports: [
     BrowserModule,
@@ -43,8 +43,10 @@ import { RegisterComponent } from './register/register.component';
     HttpClientModule,
     NgSelectModule,
     AngularMultiSelectModule,
+    NgMultiSelectDropDownModule.forRoot(),
     NgxMatSelectSearchModule,
     NgbModule,
+    ChartsModule,
     NgxPaginationModule,
     FormsModule,
     NgxTypeaheadModule,

@@ -78,14 +78,13 @@ export class ApiService {
     return localStorage.getItem('username');
   }
 
+  getRole(){
+    return localStorage.getItem('role');
+  }
+
   //service method to register user
   register(registraitionDetails:any){
     return this.http.post(this.url+"register",registraitionDetails);
-  }
-
-  //service method to get role
-  getRole(){
-    return localStorage.getItem('role');
   }
 
   //service method to get date and time

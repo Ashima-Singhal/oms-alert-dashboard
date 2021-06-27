@@ -16,7 +16,7 @@ export class LoginComponent implements OnInit {
   credentials={
     username:'',
     password:'',
-    role:''
+    //role:''
   }
   ngOnInit(): void {
   }
@@ -29,7 +29,7 @@ export class LoginComponent implements OnInit {
 
   onSubmit(){
     
-    if((this.credentials.username!='' && this.credentials.password!='' && this.credentials.role!='') && (this.credentials.username!=null && this.credentials.password!=null&&this.credentials.role!=null)){
+    if((this.credentials.username!='' && this.credentials.password!='' ) && (this.credentials.username!=null && this.credentials.password!=null)){
       console.log('form is submitted');
       this.service.generateToken(this.credentials).subscribe((data:any)=>{
         console.log(data);
