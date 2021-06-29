@@ -12,8 +12,7 @@ import * as fs from 'file-saver';
 import * as  Highcharts from 'highcharts';
 import Exporting from 'highcharts/modules/exporting';
 import { Chart } from 'chart.js';
-import { ChartOptions, ChartType } from 'chart.js';
-import { Label, SingleDataSet } from 'ng2-charts';
+
 
 // Initialize exporting module.
 Exporting(Highcharts);
@@ -53,45 +52,7 @@ export class AnalyticsComponent implements OnInit {
   @ViewChild("container", { read: ElementRef }) container: ElementRef;
   @ViewChild("datatable", { read: ElementRef }) datatable: ElementRef;
 
-  public pieChartOptions: ChartOptions = {
-    responsive: true,
-    legend: {
-      position: 'top',
-    },
-    tooltips: {
-      enabled: true,
-      mode: 'single',
-      callbacks: {
-        label: function (tooltipItems, data) {
-          return data.datasets[0].data[tooltipItems.index] + ' %';
-        }
-      }
-    },
-  };
- // public pieChartLabels: Label[] = ['VFC_INT_RETURN_SEND_INVOICE_Q Depth > 100', 'Critical MQ connection issue','VFC_INT_ORDER_CLOSE_Q Depth > 100',
-  //'VFC_INB_WCS_WMB_ITEM_UPDATE_Q Depth > 100',  'VFC_INT_SHIPMENT_CLOSE_Q Depth > 100',  'VFC_PAYMENT_EXECUTION_AGENT_Q Depth > 100',
-  //'VFC_CAPACITY_CHANGE_INT_Q Depth > 50','VFC_PAYMENT_COLLECTION_Q Depth > 100',  'VFC_INB_DOM_STR_ORDER_UPDATE_Q Depth > 100',
-  //'VFC_RESEND_EMAILS_PURGE_AGENT_Q Depth > 100','VFC_INB_MDM_STR_ITEM_Q Depth > 100', 'VFC_INT_VENDOR_FEED_AGENT_Q Depth > 100',
-  //'VFC_INB_WC_STR_ORDER_CREATE_Q Depth > 200',  'Data Extract Failure', 'Deadlock Detected','Critical - Excessive Queries in Lock-Wait','OMSStatistics query result is 0 units for at least 30 mins',
-  //'Excessive Database Query Timeouts (YFC0006)','VFC_INB_DOM_STR_ORDER_UPDATE_Q Depth > 100','Default Queue Depth Alert - Custom Queues','Queue Depth exceeds 50000',
-  //'Container CPU Usage % is too high','Container Memory Usage % is too high','Crashloop Detection','Connectivity Issue (Various Connection Failure Exceptions)',
-  //'rl_ReceivePIXFeed_Q depth > 1 for 1 hour','STERLING_EFA_TO_OMS_DEMANDS_Q Queue Depth','Host CPU % above 90 for 5 minutes','TB_LOAD_INV_MISMATCH_Q queue depth > 100 for 15 minutes',
-   //'OMSStatistics query result is 0 units for at least 120 mins','IV integration failure','Connectivity Issue (ConnectException)','Excessive Errors from Agent/Integration Servers - critical',
-  //'Excessive Errors - Critical','TB_CREATE_ORDER_Q queue depth > 100 for 15 minutes'];
-  public pieChartData: SingleDataSet=[];
-  public pieChartType: ChartType = 'pie';
- 
-  public pieChartPlugins = [];
-  public chartColors: Array<any> = [
-    { // all colors in order
-      backgroundColor: ['#9C27B0','#69F0AE','#6A1B9A', '#d13537', '#b000b5', '#c0ffee', '#000000', '#007E33', '#0099CC', '#FF8800', '#CC0000', '#ff4444', '#00695c','#0d47a1','#3E4551', '#ff80ab','#69F0AE','#6A1B9A',
-         '#607D8B','#795548','#EEFF41','#689F38','#FF4081','#F44336','#C62828','#FF4081','#448AFF','#3F51B5','#448AFF',
-        '#9E9D24','#E040FB','#CDDC39','#37474F','ffe4c4']
-     
-    }
-]
-    public pieChartLabels: Label[]=['VFC_PAYMENT_EXECUTION_AGENT_Q Depth > 100','VFC_INB_WCS_WMB_ITEM_UPDATE_Q Depth > 100','VFC_PAYMENT_EXECUTION_Q Depth > 100','VFC_PAYMENT_EXECUTION_Q Depth > 100'];
- 
+  
   constructor(private service:ApiService, private router:Router, private route: ActivatedRoute) { }
 
   events:any = [];
@@ -247,61 +208,9 @@ getAllEvents(){
 
     this.events = data;
     var totalLength = data.length;
-   // var condit1 = data.filter(data=>(data.condition_name=='VFC_INT_RETURN_SEND_INVOICE_Q Depth > 100')).length;
-    //var condit2 = data.filter(data=>(data.condition_name == 'Critical MQ connection issue')).length;
-    //var condit3 = data.filter(data=>(data.condition_name == 'VFC_INT_ORDER_CLOSE_Q Depth > 100')).length;
-    //var condit4 = data.filter(data=>(data.condition_name == 'VFC_INB_WCS_WMB_ITEM_UPDATE_Q Depth > 100')).length;
-    //var condit5 = data.filter(data=>(data.condition_name == 'VFC_INT_SHIPMENT_CLOSE_Q Depth > 100')).length;
-    //var condit6 = data.filter(data=>(data.condition_name == 'VFC_PAYMENT_EXECUTION_AGENT_Q Depth > 100')).length;
-   // var condit7 = data.filter(data=>(data.condition_name == 'VFC_CAPACITY_CHANGE_INT_Q Depth > 50' )).length;
-    //var condit8 = data.filter(data=>(data.condition_name == 'VFC_PAYMENT_COLLECTION_Q Depth > 100')).length;
-    //var condit9 = data.filter(data=>(data.condition_name == 'VFC_INB_DOM_STR_ORDER_UPDATE_Q Depth > 100')).length;
-    //var condit10 = data.filter(data=>(data.condition_name == 'VFC_RESEND_EMAILS_PURGE_AGENT_Q Depth > 100')).length;
-    //var condit11 = data.filter(data=>(data.condition_name == 'VFC_INB_MDM_STR_ITEM_Q Depth > 100')).length;
-    //var condit12= data.filter(data=>(data.condition_name == 'VFC_INT_VENDOR_FEED_AGENT_Q Depth > 100')).length;
-    var condit13= data.filter(data=>(data.condition_name == 'VFC_INB_WC_STR_ORDER_CREATE_Q Depth > 200')).length;
-    var condit14 = data.filter(data=>(data.condition_name ==  'Data Extract Failure')).length;
-    var condit15 = data.filter(data=>(data.condition_name ==  'Deadlock Detected')).length;
-    var condit16 = data.filter(data=>(data.condition_name == 'Critical - Excessive Queries in Lock-Wait')).length;
-    var condit17 = data.filter(data=>(data.condition_name == 'OMSStatistics query result is 0 units for at least 30 mins')).length;
-    var condit18 = data.filter(data=>(data.condition_name == 'Excessive Database Query Timeouts (YFC0006)')).length;
-    var condit19 = data.filter(data=>(data.condition_name == 'VFC_INB_DOM_STR_ORDER_UPDATE_Q Depth > 100')).length;
-    var condit20 = data.filter(data=>(data.condition_name == 'Default Queue Depth Alert - Custom Queues')).length;
-    var condit21 = data.filter(data=>(data.condition_name == 'Queue Depth exceeds 50000')).length;
-    var condit22 = data.filter(data=>(data.condition_name == 'Container CPU Usage % is too high')).length;
-    var condit23 = data.filter(data=>(data.condition_name == 'Container Memory Usage % is too high')).length;
-    var condit24 = data.filter(data=>(data.condition_name == 'Crashloop Detection')).length;
-    var condit25 = data.filter(data=>(data.condition_name == 'Connectivity Issue (Various Connection Failure Exceptions)')).length;
-    var condit26 = data.filter(data=>(data.condition_name == 'rl_ReceivePIXFeed_Q depth > 1 for 1 hour')).length;
-    var condit27 = data.filter(data=>(data.condition_name == 'STERLING_EFA_TO_OMS_DEMANDS_Q Queue Depth')).length;
-    var condit28 = data.filter(data=>(data.condition_name == 'Host CPU % above 90 for 5 minutes')).length;
-    var condit29 = data.filter(data=>(data.condition_name == 'TB_LOAD_INV_MISMATCH_Q queue depth > 100 for 15 minutes')).length;
-    var condit30= data.filter(data=>(data.condition_name == 'GC (Global) Overhead (High) - Application Server - IKS')).length;
-    var condit31 = data.filter(data=>(data.condition_name == 'VFC_PAYMENT_EXECUTION_AGENT_Q Depth > 100')).length;
-    var condit32 = data.filter(data=>(data.condition_name == 'VFC_INB_WCS_WMB_ITEM_UPDATE_Q Depth > 100')).length;
-    var condit33 = data.filter(data=>(data.condition_name == 'VFC_PAYMENT_EXECUTION_Q Depth > 100')).length;
-    var condit34 = data.filter(data=>(data.condition_name == 'VFC_PAYMENT_EXECUTION_Q Depth > 100')).length;
-   // var condit36 = data.filter(data=>(data.condition_name == 'VFC_PAYMENT_EXECUTION_AGENT_Q Depth > 100')).length;
-   // var condit28 = data.filter(data=>(data.condition_name == 'Host CPU % above 90 for 5 minutes')).length;
-    //var condit28 = data.filter(data=>(data.condition_name == 'Host CPU % above 90 for 5 minutes')).length;
-    //var condit28 = data.filter(data=>(data.condition_name == 'Host CPU % above 90 for 5 minutes')).length;
-    //var condit28 = data.filter(data=>(data.condition_name == 'Host CPU % above 90 for 5 minutes')).length;
-    //var condit28 = data.filter(data=>(data.condition_name == 'Host CPU % above 90 for 5 minutes')).length;
-    //var condit2 = data.filter(data=>(data.condition_name == 'Host CPU % above 90 for 5 minutes')).length;
-    //var condit28 = data.filter(data=>(data.condition_name == 'Host CPU % above 90 for 5 minutes')).length;
-    //var condit28 = data.filter(data=>(data.condition_name == 'Host CPU % above 90 for 5 minutes')).length;
-   // var condit28 = data.filter(data=>(data.condition_name == 'Host CPU % above 90 for 5 minutes')).length;
-    //var condit28 = data.filter(data=>(data.condition_name == 'Host CPU % above 90 for 5 minutes')).length;
-    //var condit28 = data.filter(data=>(data.condition_name == 'Host CPU % above 90 for 5 minutes')).length;
-    //var condit28 = data.filter(data=>(data.condition_name == 'Host CPU % above 90 for 5 minutes')).length;
-    //var condit28 = data.filter(data=>(data.condition_name == 'Host CPU % above 90 for 5 minutes')).length;
-    //var condit28 = data.filter(data=>(data.condition_name == 'Host CPU % above 90 for 5 minutes')).length;
+   
     //var condit28 = data.filter(data=>(data.condition_name == 'Host CPU % above 90 for 5 minutes')).length;
 
-    this.pieChartData=[condit31,condit32,condit33,condit34];
-
-   
-   
     this.selectedStatic(this.searchCond.condition_name)
 
     console.log(this.datatable.nativeElement);
